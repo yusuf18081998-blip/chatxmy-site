@@ -1,10 +1,9 @@
- 
 <!DOCTYPE html>
 <html lang="uz">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ChatXMY</title>
+    <title>ChatXMY - AI Chat</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -16,56 +15,159 @@
             align-items: center;
             padding: 20px;
         }
-        .card {
+        .container {
             background: white;
             border-radius: 20px;
-            padding: 60px 50px;
-            max-width: 600px;
-            text-align: center;
+            width: 100%;
+            max-width: 800px;
+            height: 600px;
+            display: flex;
+            flex-direction: column;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
         }
-        h1 {
-            font-size: 48px;
-            margin-bottom: 20px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        p {
-            font-size: 18px;
-            color: #666;
-            margin-bottom: 15px;
-        }
-        .author {
-            font-size: 16px;
-            color: #999;
-            margin-bottom: 40px;
-        }
-        .btn {
-            display: inline-block;
-            padding: 15px 40px;
+        .header {
             background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
-            text-decoration: none;
-            border-radius: 50px;
-            font-size: 18px;
+            padding: 20px;
+            border-radius: 20px 20px 0 0;
+            text-align: center;
+        }
+        .messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .message {
+            max-width: 70%;
+            padding: 12px 18px;
+            border-radius: 18px;
+            word-wrap: break-word;
+        }
+        .message.user {
+            align-self: flex-end;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+        .message.bot {
+            align-self: flex-start;
+            background: #f0f0f0;
+            color: #333;
+        }
+        .input-area {
+            padding: 20px;
+            border-top: 1px solid #eee;
+            display: flex;
+            gap: 10px;
+        }
+        input {
+            flex: 1;
+            padding: 12px 18px;
+            border: 2px solid #ddd;
+            border-radius: 25px;
+            font-size: 15px;
+            outline: none;
+        }
+        input:focus {
+            border-color: #667eea;
+        }
+        button {
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 15px;
+            cursor: pointer;
             font-weight: 600;
-            transition: all 0.3s;
         }
-        .btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.5);
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
         }
+        .typing {
+            align-self: flex-start;
+            padding: 12px 18px;
+            background: #f0f0f0;
+            border-radius: 18px;
+            display: none;
+        }
+        .typing.show { display: block; }
     </style>
 </head>
 <body>
-    <div class="card">
-        <h1>🤖 ChatXMY</h1>
-        <p>AI Ta'lim Yordamchisi</p>
-        <p class="author">Xo'jayev Muhammad Yusuf</p>
-        <a href="https://t.me/CHATXMY_BOT" class="btn" target="_blank">
-            📱 Telegram Botni Ochish
-        </a>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 ChatXMY</h1>
+            <p>AI Yordamchi - Xo'jayev Muhammad Yusuf</p>
+        </div>
+        
+        <div class="messages" id="messages">
+            <div class="message bot">
+                Salom! Men ChatXMY. Sizga qanday yordam bera olaman?
+            </div>
+        </div>
+        
+        <div class="input-area">
+            <input type="text" id="input" placeholder="Savolingizni yozing..." onkeypress="if(event.key==='Enter') sendMessage()">
+            <button onclick="sendMessage()">Yuborish</button>
+        </div>
     </div>
+
+    <script>
+        let history = [];
+        
+        async function sendMessage() {
+            const input = document.getElementById('input');
+            const message = input.value.trim();
+            if (!message) return;
+            
+            addMessage(message, 'user');
+            input.value = '';
+            
+            const typing = document.createElement('div');
+            typing.className = 'typing show';
+            typing.textContent = '...';
+            document.getElementById('messages').appendChild(typing);
+            
+            try {
+                history.push({role: 'user', content: message});
+                
+                const response = await fetch('/.netlify/functions/chat', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        messages: [
+                            {role: 'system', content: 'Sen ChatXMY botsan. Xojayev Muhammad Yusuf seni yaratgan. Qisqa va aniq javob ber.'},
+                            ...history
+                        ]
+                    })
+                });
+                
+                const data = await response.json();
+                typing.remove();
+                
+                if (data.answer) {
+                    history.push({role: 'assistant', content: data.answer});
+                    addMessage(data.answer, 'bot');
+                } else {
+                    addMessage('Kechirasiz, xatolik yuz berdi.', 'bot');
+                }
+            } catch (error) {
+                typing.remove();
+                addMessage('Xatolik: ' + error.message, 'bot');
+            }
+        }
+        
+        function addMessage(text, type) {
+            const div = document.createElement('div');
+            div.className = 'message ' + type;
+            div.textContent = text;
+            document.getElementById('messages').appendChild(div);
+            document.getElementById('messages').scrollTop = 999999;
+        }
+    </script>
 </body>
 </html>
