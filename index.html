@@ -138,7 +138,166 @@
             <button onclick="sendMessage()">Yuborish</button>
         </div>
     </div>
+<style>
+    .premium-badge {
+        background: linear-gradient(135deg, #FFD700, #FFA500);
+        color: #000;
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: bold;
+        margin-left: 10px;
+    }
+    
+    .limit-warning {
+        background: #fff3cd;
+        color: #856404;
+        padding: 15px;
+        border-radius: 10px;
+        margin: 10px 0;
+        text-align: center;
+    }
+    
+    .upgrade-btn {
+        background: linear-gradient(135deg, #FFD700, #FFA500);
+        color: #000;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 25px;
+        font-weight: bold;
+        cursor: pointer;
+        margin-top: 10px;
+    }
+    
+    .upgrade-btn:hover {
+        transform: scale(1.05);
+    }
+</style>
 
+<script>
+    let history = [];
+    
+    // Premium tizimi
+    const DAILY_LIMIT = 10;
+    let isPremium = localStorage.getItem('isPremium') === 'true';
+    
+    function getUsageToday() {
+        const today = new Date().toDateString();
+        const usage = JSON.parse(localStorage.getItem('usage') || '{}');
+        
+        if (usage.date !== today) {
+            usage.date = today;
+            usage.count = 0;
+            localStorage.setItem('usage', JSON.stringify(usage));
+        }
+        
+        return usage.count || 0;
+    }
+    
+    function incrementUsage() {
+        const today = new Date().toDateString();
+        const usage = JSON.parse(localStorage.getItem('usage') || '{}');
+        usage.date = today;
+        usage.count = (usage.count || 0) + 1;
+        localStorage.setItem('usage', JSON.stringify(usage));
+    }
+    
+    function showLimitWarning(remaining) {
+        const warning = document.createElement('div');
+        warning.className = 'limit-warning';
+        warning.innerHTML = `
+            ⚠️ Sizda bugun <strong>${remaining} ta savol</strong> qoldi!<br>
+            <button class="upgrade-btn" onclick="showPremiumModal()">👑 Premium oling - Cheksiz!</button>
+        `;
+        
+        const messages = document.getElementById('messages');
+        messages.insertBefore(warning, messages.firstChild);
+        
+        setTimeout(() => warning.remove(), 5000);
+    }
+    
+    function showPremiumModal() {
+        alert(`🎉 Premium rejaga o'ting!\n\n✅ Cheksiz savollar\n✅ Tezroq javob\n✅ Premium dizayn\n\n💰 Faqat $4.99/oy\n\n📞 Aloqa: @CHATXMY_BOT`);
+    }
+    
+    // Premium badge qo'shish
+    if (isPremium) {
+        document.querySelector('.chat-title').innerHTML += ' <span class="premium-badge">👑 Premium</span>';
+    }
+    
+    async function sendMessage() {
+        const input = document.getElementById('input');
+        const message = input.value.trim();
+        if (!message) return;
+        
+        // Limit tekshirish
+        if (!isPremium) {
+            const usage = getUsageToday();
+            if (usage >= DAILY_LIMIT) {
+                addMessage('❌ Kunlik limit tugadi! Premium versiyaga o\'ting - cheksiz savol!', 'bot');
+                showPremiumModal();
+                return;
+            }
+            
+            const remaining = DAILY_LIMIT - usage;
+            if (remaining <= 3) {
+                showLimitWarning(remaining);
+            }
+        }
+        
+        addMessage(message, 'user');
+        input.value = '';
+        
+        const typing = document.createElement('div');
+        typing.className = 'typing show';
+        typing.textContent = '...';
+        document.getElementById('messages').appendChild(typing);
+        
+        try {
+            history.push({role: 'user', content: message});
+            
+            const response = await fetch('/.netlify/functions/chat', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    messages: [
+                        {role: 'system', content: 'Sen ChatXMY botsan. Xojayev Muhammad Yusuf seni yaratgan. FAQAT O\'ZBEKCHA javob ber! Har doim o\'zbek tilida yoz. Qisqa va aniq javob ber.'},
+                        ...history
+                    ]
+                })
+            });
+            
+            const data = await response.json();
+            typing.remove();
+            
+            if (data.answer) {
+                history.push({role: 'assistant', content: data.answer});
+                addMessage(data.answer, 'bot');
+                
+                // Foydalanishni sanash (faqat bepul uchun)
+                if (!isPremium) {
+                    incrementUsage();
+                }
+            } else {
+                addMessage('Kechirasiz, xatolik yuz berdi.', 'bot');
+            }
+        } catch (error) {
+            typing.remove();
+            addMessage('Xatolik: ' + error.message, 'bot');
+        }
+    }
+    
+    function addMessage(text, type) {
+        const div = document.createElement('div');
+        div.className = 'message ' + type;
+        div.textContent = text;
+        document.getElementById('messages').appendChild(div);
+        document.getElementById('messages').scrollTop = 999999;
+    }
+    
+    // Test uchun: Premium yoqish/o'chirish
+    console.log('Premium test: localStorage.setItem("isPremium", "true")');
+</script>
     <script>
         let history = [];
         
