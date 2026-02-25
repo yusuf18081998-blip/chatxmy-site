@@ -7,7 +7,7 @@
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#667eea">
     <title>ChatXMY - AI Ta'lim Yordamchisi | O'zbekcha</title>
-    <meta name="description" content="ChatXMY - AI sun'iy intellekt bilan o'zbek tilida ta'lim yordamchisi. Matematika, Fizika, Kimyo, Biologiya va boshqa fanlar bo'yicha bepul yordam. Muhammad Yusuf tomonidan yaratilgan.">
+    <meta name="description" content="ChatXMY - AI sun'iy intellekt bilan o'zbek tilida ta'lim yordamchisi. Matematika, Fizika, Kimyo, Biologiya va boshqa fanlar bo'yicha bepul yordam.">
     <meta name="keywords" content="chatxmy, ai yordamchi, o'zbek tili, ta'lim, matematika, fizika, kimyo, sun'iy intellekt, bepul, online">
     <meta name="author" content="Xo'jayev Muhammad Yusuf">
     <meta property="og:type" content="website">
@@ -19,6 +19,10 @@
     <meta name="twitter:title" content="ChatXMY - AI Ta'lim Yordamchisi">
     <meta name="twitter:description" content="AI bilan o'zbek tilida ta'lim yordamchisi">
     <meta name="twitter:image" content="https://chatxmy.netlify.app/icon-512.png">
+    
+    <!-- Prism.js CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -34,17 +38,65 @@
             background: white;
             border-radius: 20px;
             width: 100%;
-            max-width: 800px;
+            max-width: 900px;
             height: 600px;
             display: flex;
-            flex-direction: column;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        .sidebar {
+            width: 250px;
+            background: #f8f9fa;
+            border-radius: 20px 0 0 20px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            overflow-y: auto;
+        }
+        .sidebar h3 {
+            color: #667eea;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+        .history-item {
+            padding: 12px;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+        .history-item:hover {
+            border-color: #667eea;
+            transform: translateX(5px);
+        }
+        .history-item.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+        .clear-btn {
+            padding: 10px;
+            background: #ff4444;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: auto;
+        }
+        .clear-btn:hover {
+            background: #cc0000;
+        }
+        .chat-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
         }
         .header {
             background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
             padding: 20px;
-            border-radius: 20px 20px 0 0;
+            border-radius: 0 20px 0 0;
             text-align: center;
         }
         .messages {
@@ -94,7 +146,7 @@
             border-color: #667eea;
         }
         button {
-            padding: 12px 30px;
+            padding: 12px 20px;
             background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
             border: none;
@@ -145,39 +197,104 @@
         .upgrade-btn:hover {
             transform: scale(1.05);
         }
+        .code-block {
+            position: relative;
+            margin: 10px 0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .code-header {
+            background: #2d2d2d;
+            color: #ccc;
+            padding: 8px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            font-family: monospace;
+        }
+        .copy-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+        }
+        .copy-btn:hover {
+            background: #45a049;
+        }
+        .copy-btn.copied {
+            background: #2196F3;
+        }
+        pre[class*="language-"] {
+            margin: 0 !important;
+            border-radius: 0 0 8px 8px !important;
+        }
+        code[class*="language-"] {
+            font-size: 14px !important;
+        }
+        @media (max-width: 768px) {
+            .sidebar {
+                display: none;
+            }
+            .container {
+                max-width: 100%;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <h1 id="chatTitle">🤖 ChatXMY</h1>
-            <p>AI Yordamchi - Xo'jayev Muhammad Yusuf</p>
+        <div class="sidebar">
+            <h3>📝 Tarix</h3>
+            <div id="historyList"></div>
+            <button class="clear-btn" onclick="clearHistory()">🗑️ Tozalash</button>
         </div>
         
-        <div class="messages" id="messages">
-            <div class="message bot">
-                Salom! Men ChatXMY. Sizga qanday yordam bera olaman?
+        <div class="chat-area">
+            <div class="header">
+                <h1 id="chatTitle">🤖 ChatXMY</h1>
+                <p>AI Yordamchi - Xo'jayev Muhammad Yusuf</p>
+            </div>
+            
+            <div class="messages" id="messages">
+                <div class="message bot">
+                    Salom! Men ChatXMY. Sizga qanday yordam bera olaman?
+                </div>
+            </div>
+            
+            <div class="input-area">
+                <input type="file" id="imageInput" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
+                <button onclick="document.getElementById('imageInput').click()" style="padding: 15px; border-radius: 50%; font-size: 20px;" title="Rasm yuklash">
+                    📷
+                </button>
+                <button onclick="startVoiceInput()" id="voiceBtn" style="padding: 15px; border-radius: 50%; font-size: 20px; background: #764ba2;" title="Ovozli kirish">
+                    🎤
+                </button>
+                <input type="text" id="input" placeholder="Savolingizni yozing..." onkeypress="if(event.key==='Enter') sendMessage()">
+                <button onclick="sendMessage()">Yuborish</button>
             </div>
         </div>
-        
-        <div class="input-area">
-            <input type="file" id="imageInput" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
-            <button onclick="document.getElementById('imageInput').click()" style="padding: 15px; border-radius: 50%; font-size: 20px;" title="Rasm yuklash">
-                📷
-            </button>
-            <button onclick="startVoiceInput()" id="voiceBtn" style="padding: 15px; border-radius: 50%; font-size: 20px; background: #764ba2;" title="Ovozli kirish">
-               🎤
-            </button>
-            <input type="text" id="input" placeholder="Savolingizni yozing..." onkeypress="if(event.key==='Enter') sendMessage()">
-            <button onclick="sendMessage()">Yuborish</button>
-        </div>
     </div>
+
+    <!-- Prism.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markup.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-css.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-java.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
 
     <script>
         let history = [];
         let currentImage = null;
+        let chatHistory = JSON.parse(localStorage.getItem('chatHistory') || '[]');
+        let currentChatId = null;
         
-        // Premium tizimi - 4 soat limit
+        // Premium tizimi
         const DAILY_TIME_LIMIT = 4 * 60 * 60 * 1000;
         let isPremium = localStorage.getItem('isPremium') === 'true';
         let sessionStartTime = Date.now();
@@ -238,6 +355,7 @@
 ✅ 24/7 Cheksiz gaplashish
 ✅ Tezroq javob
 ✅ Rasm yuborish
+✅ Tarix saqlash
 ✅ Premium dizayn
 
 💰 Faqat $4.99/oy
@@ -251,23 +369,12 @@
             document.getElementById('chatTitle').innerHTML += ' <span class="premium-badge">👑 Premium</span>';
         }
         
-        let activityTimer = null;
-        
-        function startActivityTracking() {
-            if (!isPremium) {
-                sessionStartTime = Date.now();
-            }
-        }
-        
-        function stopActivityTracking() {
-            if (!isPremium && sessionStartTime) {
+        window.addEventListener('beforeunload', () => {
+            if (sessionStartTime) {
                 const duration = Date.now() - sessionStartTime;
                 addUsageTime(duration);
-                sessionStartTime = null;
             }
-        }
-        
-        window.addEventListener('beforeunload', stopActivityTracking);
+        });
         
         setInterval(() => {
             if (!isPremium && sessionStartTime) {
@@ -277,6 +384,84 @@
             }
         }, 30000);
         
+        // Tarix funksiyalari
+        function loadHistory() {
+            const historyList = document.getElementById('historyList');
+            historyList.innerHTML = '';
+            
+            chatHistory.slice().reverse().forEach((chat, index) => {
+                const item = document.createElement('div');
+                item.className = 'history-item';
+                if (chat.id === currentChatId) item.classList.add('active');
+                
+                const preview = chat.messages[0]?.content?.substring(0, 30) || 'Yangi chat';
+                const date = new Date(chat.timestamp).toLocaleDateString('uz-UZ');
+                
+                item.innerHTML = `
+                    <div style="font-weight: bold; margin-bottom: 5px;">${preview}...</div>
+                    <div style="font-size: 11px; color: #999;">${date}</div>
+                `;
+                
+                item.onclick = () => loadChat(chat.id);
+                historyList.appendChild(item);
+            });
+        }
+        
+        function saveCurrentChat() {
+            if (history.length === 0) return;
+            
+            if (!currentChatId) {
+                currentChatId = Date.now().toString();
+                chatHistory.push({
+                    id: currentChatId,
+                    timestamp: Date.now(),
+                    messages: []
+                });
+            }
+            
+            const chat = chatHistory.find(c => c.id === currentChatId);
+            if (chat) {
+                chat.messages = [...history];
+                localStorage.setItem('chatHistory', JSON.stringify(chatHistory));
+                loadHistory();
+            }
+        }
+        
+        function loadChat(chatId) {
+            const chat = chatHistory.find(c => c.id === chatId);
+            if (!chat) return;
+            
+            currentChatId = chatId;
+            history = [...chat.messages];
+            
+            const messagesDiv = document.getElementById('messages');
+            messagesDiv.innerHTML = '';
+            
+            history.forEach(msg => {
+                addMessage(msg.content, msg.role === 'user' ? 'user' : 'bot', false);
+            });
+            
+            loadHistory();
+        }
+        
+        function clearHistory() {
+            if (confirm('Barcha tarixni o\'chirmoqchimisiz?')) {
+                chatHistory = [];
+                localStorage.removeItem('chatHistory');
+                loadHistory();
+                newChat();
+            }
+        }
+        
+        function newChat() {
+            currentChatId = null;
+            history = [];
+            const messagesDiv = document.getElementById('messages');
+            messagesDiv.innerHTML = '<div class="message bot">Salom! Men ChatXMY. Sizga qanday yordam bera olaman?</div>';
+            loadHistory();
+        }
+        
+        // Rasm yuklash
         function handleImageUpload(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -299,6 +484,59 @@
             reader.readAsDataURL(file);
         }
         
+        // Ovozli chat
+        let recognition = null;
+        let synthesis = window.speechSynthesis;
+        
+        function startVoiceInput() {
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                addMessage('❌ Sizning brauzeringiz ovozni qo\'llab-quvvatlamaydi!', 'bot');
+                return;
+            }
+            
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SpeechRecognition();
+            recognition.lang = 'uz-UZ';
+            recognition.interimResults = false;
+            recognition.maxAlternatives = 1;
+            
+            const voiceBtn = document.getElementById('voiceBtn');
+            voiceBtn.textContent = '🔴';
+            voiceBtn.style.background = '#ff4444';
+            
+            recognition.onresult = function(event) {
+                const transcript = event.results[0][0].transcript;
+                document.getElementById('input').value = transcript;
+                voiceBtn.textContent = '🎤';
+                voiceBtn.style.background = '#764ba2';
+                setTimeout(() => sendMessage(), 500);
+            };
+            
+            recognition.onerror = function(event) {
+                addMessage('❌ Ovoz tanilmadi. Qayta urinib ko\'ring!', 'bot');
+                voiceBtn.textContent = '🎤';
+                voiceBtn.style.background = '#764ba2';
+            };
+            
+            recognition.onend = function() {
+                voiceBtn.textContent = '🎤';
+                voiceBtn.style.background = '#764ba2';
+            };
+            
+            recognition.start();
+            addMessage('🎤 Gapiring...', 'bot');
+        }
+        
+        function speakText(text) {
+            synthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'uz-UZ';
+            utterance.rate = 0.9;
+            utterance.pitch = 1;
+            utterance.volume = 1;
+            synthesis.speak(utterance);
+        }
+        
         async function sendMessage() {
             const input = document.getElementById('input');
             const message = input.value.trim();
@@ -317,7 +555,7 @@
                     showLimitWarning(formatTime(remaining.hours, remaining.minutes));
                 }
                 
-                startActivityTracking();
+                sessionStartTime = Date.now();
             }
             
             addMessage(message, 'user');
@@ -334,7 +572,7 @@
                 const requestBody = {
                     model: currentImage ? "llama-3.2-90b-vision-preview" : "llama-3.3-70b-versatile",
                     messages: currentImage ? [
-                        {role: 'system', content: 'Sen ChatXMY botsan. Xojayev Muhammad Yusuf seni yaratgan. FAQAT O\'ZBEKCHA javob ber! Har doim o\'zbek tilida yoz. Qisqa va aniq javob ber.'},
+                        {role: 'system', content: 'Sen ChatXMY botsan. Xojayev Muhammad Yusuf seni yaratgan. FAQAT O\'ZBEKCHA javob ber! Har doim o\'zbek tilida yoz. Qisqa va aniq javob ber. Agar kod yozsang, markdown kod bloklaridan foydalaning: ```language\nkod\n```'},
                         ...history.slice(0, -1),
                         {
                             role: 'user',
@@ -344,7 +582,7 @@
                             ]
                         }
                     ] : [
-                        {role: 'system', content: 'Sen ChatXMY botsan. Xojayev Muhammad Yusuf seni yaratgan. FAQAT O\'ZBEKCHA javob ber! Har doim o\'zbek tilida yoz. Qisqa va aniq javob ber.'},
+                        {role: 'system', content: 'Sen ChatXMY botsan. Xojayev Muhammad Yusuf seni yaratgan. FAQAT O\'ZBEKCHA javob ber! Har doim o\'zbek tilida yoz. Qisqa va aniq javob ber. Agar kod yozsang, markdown kod bloklaridan foydalaning: ```language\nkod\n```'},
                         ...history
                     ]
                 };
@@ -362,11 +600,12 @@
                     currentImage = null;
                 }
                 
-               if (data.answer) {
-                history.push({role: 'assistant', content: data.answer});
-                addMessage(data.answer, 'bot');
-                speakText(data.answer); 
-             } else {
+                if (data.answer) {
+                    history.push({role: 'assistant', content: data.answer});
+                    addMessage(data.answer, 'bot');
+                    speakText(data.answer);
+                    saveCurrentChat();
+                } else {
                     addMessage('Kechirasiz, xatolik yuz berdi.', 'bot');
                 }
             } catch (error) {
@@ -375,69 +614,71 @@
             }
         }
         
-        function addMessage(text, type) {
+        function addMessage(text, type, save = true) {
             const div = document.createElement('div');
             div.className = 'message ' + type;
-            div.textContent = text;
+            
+            const codeBlockRegex = /```(\w+)?\n([\s\S]*?)```/g;
+            
+            if (codeBlockRegex.test(text)) {
+                let html = text;
+                
+                html = html.replace(/```(\w+)?\n([\s\S]*?)```/g, (match, lang, code) => {
+                    const language = lang || 'javascript';
+                    const codeId = 'code-' + Date.now() + Math.random();
+                    
+                    return `
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span>${language.toUpperCase()}</span>
+                                <button class="copy-btn" onclick="copyCode('${codeId}')">📋 Copy</button>
+                            </div>
+                            <pre><code id="${codeId}" class="language-${language}">${escapeHtml(code.trim())}</code></pre>
+                        </div>
+                    `;
+                });
+                
+                div.innerHTML = html;
+                
+                setTimeout(() => {
+                    div.querySelectorAll('code').forEach(block => {
+                        Prism.highlightElement(block);
+                    });
+                }, 10);
+            } else {
+                div.textContent = text;
+            }
+            
             document.getElementById('messages').appendChild(div);
             document.getElementById('messages').scrollTop = 999999;
         }
-        }  // ← addMessage() tugashi
-
-// Ovozli chat
-let recognition = null;
-let synthesis = window.speechSynthesis;
-
-function startVoiceInput() {
-    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-        addMessage('❌ Sizning brauzeringiz ovozni qo\'llab-quvvatlamaydi!', 'bot');
-        return;
-    }
-    
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    recognition = new SpeechRecognition();
-    recognition.lang = 'uz-UZ';
-    recognition.interimResults = false;
-    recognition.maxAlternatives = 1;
-    
-    const voiceBtn = document.getElementById('voiceBtn');
-    voiceBtn.textContent = '🔴';
-    voiceBtn.style.background = '#ff4444';
-    
-    recognition.onresult = function(event) {
-        const transcript = event.results[0][0].transcript;
-        document.getElementById('input').value = transcript;
-        voiceBtn.textContent = '🎤';
-        voiceBtn.style.background = '#764ba2';
-        setTimeout(() => sendMessage(), 500);
-    };
-    
-    recognition.onerror = function(event) {
-        addMessage('❌ Ovoz tanilmadi. Qayta urinib ko\'ring!', 'bot');
-        voiceBtn.textContent = '🎤';
-        voiceBtn.style.background = '#764ba2';
-    };
-    
-    recognition.onend = function() {
-        voiceBtn.textContent = '🎤';
-        voiceBtn.style.background = '#764ba2';
-    };
-    
-    recognition.start();
-    addMessage('🎤 Gapiring...', 'bot');
-}
-
-function speakText(text) {
-    synthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'uz-UZ';
-    utterance.rate = 0.9;
-    utterance.pitch = 1;
-    utterance.volume = 1;
-    synthesis.speak(utterance);
-}
-
-console.log('Premium test...
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        function copyCode(codeId) {
+            const codeElement = document.getElementById(codeId);
+            const code = codeElement.textContent;
+            
+            navigator.clipboard.writeText(code).then(() => {
+                const btn = event.target;
+                const originalText = btn.textContent;
+                btn.textContent = '✅ Nusxalandi!';
+                btn.classList.add('copied');
+                
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.classList.remove('copied');
+                }, 2000);
+            });
+        }
+        
+        // Boshlang'ich yuklash
+        loadHistory();
+        
         console.log('Premium test: localStorage.setItem("isPremium", "true")');
     </script>
 </body>
