@@ -165,6 +165,9 @@
             <button onclick="document.getElementById('imageInput').click()" style="padding: 15px; border-radius: 50%; font-size: 20px;" title="Rasm yuklash">
                 📷
             </button>
+            <button onclick="startVoiceInput()" id="voiceBtn" style="padding: 15px; border-radius: 50%; font-size: 20px; background: #764ba2;" title="Ovozli kirish">
+               🎤
+            </button>
             <input type="text" id="input" placeholder="Savolingizni yozing..." onkeypress="if(event.key==='Enter') sendMessage()">
             <button onclick="sendMessage()">Yuborish</button>
         </div>
@@ -359,10 +362,11 @@
                     currentImage = null;
                 }
                 
-                if (data.answer) {
-                    history.push({role: 'assistant', content: data.answer});
-                    addMessage(data.answer, 'bot');
-                } else {
+               if (data.answer) {
+                history.push({role: 'assistant', content: data.answer});
+                addMessage(data.answer, 'bot');
+                speakText(data.answer); // ← SHU QATORNI QO'SHING!
+             } else {
                     addMessage('Kechirasiz, xatolik yuz berdi.', 'bot');
                 }
             } catch (error) {
@@ -378,7 +382,62 @@
             document.getElementById('messages').appendChild(div);
             document.getElementById('messages').scrollTop = 999999;
         }
-        
+        }  // ← addMessage() tugashi
+
+// Ovozli chat
+let recognition = null;
+let synthesis = window.speechSynthesis;
+
+function startVoiceInput() {
+    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+        addMessage('❌ Sizning brauzeringiz ovozni qo\'llab-quvvatlamaydi!', 'bot');
+        return;
+    }
+    
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    recognition = new SpeechRecognition();
+    recognition.lang = 'uz-UZ';
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+    
+    const voiceBtn = document.getElementById('voiceBtn');
+    voiceBtn.textContent = '🔴';
+    voiceBtn.style.background = '#ff4444';
+    
+    recognition.onresult = function(event) {
+        const transcript = event.results[0][0].transcript;
+        document.getElementById('input').value = transcript;
+        voiceBtn.textContent = '🎤';
+        voiceBtn.style.background = '#764ba2';
+        setTimeout(() => sendMessage(), 500);
+    };
+    
+    recognition.onerror = function(event) {
+        addMessage('❌ Ovoz tanilmadi. Qayta urinib ko\'ring!', 'bot');
+        voiceBtn.textContent = '🎤';
+        voiceBtn.style.background = '#764ba2';
+    };
+    
+    recognition.onend = function() {
+        voiceBtn.textContent = '🎤';
+        voiceBtn.style.background = '#764ba2';
+    };
+    
+    recognition.start();
+    addMessage('🎤 Gapiring...', 'bot');
+}
+
+function speakText(text) {
+    synthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'uz-UZ';
+    utterance.rate = 0.9;
+    utterance.pitch = 1;
+    utterance.volume = 1;
+    synthesis.speak(utterance);
+}
+
+console.log('Premium test...
         console.log('Premium test: localStorage.setItem("isPremium", "true")');
     </script>
 </body>
