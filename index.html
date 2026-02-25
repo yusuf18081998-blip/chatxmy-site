@@ -177,9 +177,10 @@
 <script>
     let history = [];
     
-    // Premium tizimi
-    const DAILY_LIMIT = 10;
+    // Premium tizimi - 4 soat limit
+    const DAILY_TIME_LIMIT = 4 * 60 * 60 * 1000; // 4 soat (millisekunda)
     let isPremium = localStorage.getItem('isPremium') === 'true';
+    let sessionStartTime = Date.now(); // Sessiya boshlanish vaqti
     
     function getUsageToday() {
         const today = new Date().toDateString();
@@ -187,26 +188,41 @@
         
         if (usage.date !== today) {
             usage.date = today;
-            usage.count = 0;
+            usage.totalTime = 0;
             localStorage.setItem('usage', JSON.stringify(usage));
         }
         
-        return usage.count || 0;
+        return usage.totalTime || 0;
     }
     
-    function incrementUsage() {
+    function addUsageTime(duration) {
         const today = new Date().toDateString();
         const usage = JSON.parse(localStorage.getItem('usage') || '{}');
         usage.date = today;
-        usage.count = (usage.count || 0) + 1;
+        usage.totalTime = (usage.totalTime || 0) + duration;
         localStorage.setItem('usage', JSON.stringify(usage));
     }
     
-    function showLimitWarning(remaining) {
+    function getRemainingTime() {
+        const used = getUsageToday();
+        const remaining = DAILY_TIME_LIMIT - used;
+        const hours = Math.floor(remaining / (1000 * 60 * 60));
+        const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
+        return { hours, minutes, total: remaining };
+    }
+    
+    function formatTime(hours, minutes) {
+        if (hours > 0) {
+            return `${hours} soat ${minutes} daqiqa`;
+        }
+        return `${minutes} daqiqa`;
+    }
+    
+    function showLimitWarning(timeStr) {
         const warning = document.createElement('div');
         warning.className = 'limit-warning';
         warning.innerHTML = `
-            ⚠️ Sizda bugun <strong>${remaining} ta savol</strong> qoldi!<br>
+            ⚠️ Sizda bugun <strong>${timeStr}</strong> qoldi!<br>
             <button class="upgrade-btn" onclick="showPremiumModal()">👑 Premium oling - Cheksiz!</button>
         `;
         
@@ -217,7 +233,17 @@
     }
     
     function showPremiumModal() {
-       alert(`🎉 Premium rejaga o'ting!\n\n✅ Cheksiz savollar\n✅ Tezroq javob\n✅ Premium dizayn\n\n💰 Faqat $4.99/oy\n\n📞 Aloqa: +998 94 587 64 00`);
+        alert(`🎉 Premium rejaga o'ting!
+
+✅ 24/7 Cheksiz gaplashish
+✅ Tezroq javob
+✅ Premium dizayn
+
+💰 Faqat $4.99/oy
+
+📞 Aloqa: +998 94 587 64 00
+💳 Karta: 8600 0607 0665 2055
+👤 Karta egasi: Xo'jayev Mahbubaxon`);
     }
     
     // Premium badge qo'shish
@@ -225,24 +251,56 @@
         document.querySelector('.chat-title').innerHTML += ' <span class="premium-badge">👑 Premium</span>';
     }
     
+    // Sessiya vaqtini kuzatish
+    let activityTimer = null;
+    
+    function startActivityTracking() {
+        if (!isPremium) {
+            sessionStartTime = Date.now();
+        }
+    }
+    
+    function stopActivityTracking() {
+        if (!isPremium && sessionStartTime) {
+            const duration = Date.now() - sessionStartTime;
+            addUsageTime(duration);
+            sessionStartTime = null;
+        }
+    }
+    
+    // Sahifa yopilganda vaqtni saqlash
+    window.addEventListener('beforeunload', stopActivityTracking);
+    
+    // Har 30 soniyada vaqtni yangilash (xavfsizlik uchun)
+    setInterval(() => {
+        if (!isPremium && sessionStartTime) {
+            const duration = Date.now() - sessionStartTime;
+            addUsageTime(duration);
+            sessionStartTime = Date.now();
+        }
+    }, 30000);
+    
     async function sendMessage() {
         const input = document.getElementById('input');
         const message = input.value.trim();
         if (!message) return;
         
-        // Limit tekshirish
+        // Vaqt limit tekshirish
         if (!isPremium) {
-            const usage = getUsageToday();
-            if (usage >= DAILY_LIMIT) {
-                addMessage('❌ Kunlik limit tugadi! Premium versiyaga o\'ting - cheksiz savol!', 'bot');
+            const remaining = getRemainingTime();
+            
+            if (remaining.total <= 0) {
+                addMessage('⏰ Kunlik 4 soat limit tugadi! Ertaga qayta urinib ko\'ring yoki Premium oling!', 'bot');
                 showPremiumModal();
                 return;
             }
             
-            const remaining = DAILY_LIMIT - usage;
-            if (remaining <= 3) {
-                showLimitWarning(remaining);
+            // 30 daqiqadan kam qolganda ogohlantirish
+            if (remaining.total < 30 * 60 * 1000) {
+                showLimitWarning(formatTime(remaining.hours, remaining.minutes));
             }
+            
+            startActivityTracking();
         }
         
         addMessage(message, 'user');
@@ -273,11 +331,6 @@
             if (data.answer) {
                 history.push({role: 'assistant', content: data.answer});
                 addMessage(data.answer, 'bot');
-                
-                // Foydalanishni sanash (faqat bepul uchun)
-                if (!isPremium) {
-                    incrementUsage();
-                }
             } else {
                 addMessage('Kechirasiz, xatolik yuz berdi.', 'bot');
             }
@@ -298,7 +351,6 @@
     // Test uchun: Premium yoqish/o'chirish
     console.log('Premium test: localStorage.setItem("isPremium", "true")');
 </script>
-    <script>
         let history = [];
         
         async function sendMessage() {
