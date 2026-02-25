@@ -3,30 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <head>
-        <link rel="manifest" href="/manifest.json">
-<meta name="theme-color" content="#667eea">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="google-site-verification" content="Wo7knN2bvwYHX79_M4jz-5L0EL8Ktd_K-_kpnSOWWek" />
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#667eea">
     <title>ChatXMY - AI Ta'lim Yordamchisi | O'zbekcha</title>
-<meta name="description" content="ChatXMY - AI sun'iy intellekt bilan o'zbek tilida ta'lim yordamchisi. Matematika, Fizika, Kimyo, Biologiya va boshqa fanlar bo'yicha bepul yordam. Muhammad Yusuf tomonidan yaratilgan.">
-<meta name="keywords" content="chatxmy, ai yordamchi, o'zbek tili, ta'lim, matematika, fizika, kimyo, sun'iy intellekt, bepul, online">
-<meta name="author" content="Xo'jayev Muhammad Yusuf">
-
-<!-- Open Graph / Social Media -->
-<meta property="og:type" content="website">
-<meta property="og:title" content="ChatXMY - AI Ta'lim Yordamchisi">
-<meta property="og:description" content="AI bilan o'zbek tilida ta'lim yordamchisi. Barcha fanlar bo'yicha bepul yordam!">
-<meta property="og:image" content="https://chatxmy.netlify.app/icon-512.png">
-<meta property="og:url" content="https://chatxmy.netlify.app">
-
-<!-- Twitter Card -->
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="ChatXMY - AI Ta'lim Yordamchisi">
-<meta name="twitter:description" content="AI bilan o'zbek tilida ta'lim yordamchisi">
-<meta name="twitter:image" content="https://chatxmy.netlify.app/icon-512.png">
-    <title>ChatXMY - AI Chat</title>
+    <meta name="description" content="ChatXMY - AI sun'iy intellekt bilan o'zbek tilida ta'lim yordamchisi. Matematika, Fizika, Kimyo, Biologiya va boshqa fanlar bo'yicha bepul yordam. Muhammad Yusuf tomonidan yaratilgan.">
+    <meta name="keywords" content="chatxmy, ai yordamchi, o'zbek tili, ta'lim, matematika, fizika, kimyo, sun'iy intellekt, bepul, online">
+    <meta name="author" content="Xo'jayev Muhammad Yusuf">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="ChatXMY - AI Ta'lim Yordamchisi">
+    <meta property="og:description" content="AI bilan o'zbek tilida ta'lim yordamchisi. Barcha fanlar bo'yicha bepul yordam!">
+    <meta property="og:image" content="https://chatxmy.netlify.app/icon-512.png">
+    <meta property="og:url" content="https://chatxmy.netlify.app">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="ChatXMY - AI Ta'lim Yordamchisi">
+    <meta name="twitter:description" content="AI bilan o'zbek tilida ta'lim yordamchisi">
+    <meta name="twitter:image" content="https://chatxmy.netlify.app/icon-512.png">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -79,13 +71,18 @@
             background: #f0f0f0;
             color: #333;
         }
+        .message img {
+            max-width: 200px;
+            border-radius: 10px;
+            margin-bottom: 5px;
+        }
         .input-area {
             padding: 20px;
             border-top: 1px solid #eee;
             display: flex;
             gap: 10px;
         }
-        input {
+        input[type="text"] {
             flex: 1;
             padding: 12px 18px;
             border: 2px solid #ddd;
@@ -93,7 +90,7 @@
             font-size: 15px;
             outline: none;
         }
-        input:focus {
+        input[type="text"]:focus {
             border-color: #667eea;
         }
         button {
@@ -118,12 +115,42 @@
             display: none;
         }
         .typing.show { display: block; }
+        .premium-badge {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: #000;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        .limit-warning {
+            background: #fff3cd;
+            color: #856404;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+            text-align: center;
+        }
+        .upgrade-btn {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: #000;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .upgrade-btn:hover {
+            transform: scale(1.05);
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>🤖 ChatXMY</h1>
+            <h1 id="chatTitle">🤖 ChatXMY</h1>
             <p>AI Yordamchi - Xo'jayev Muhammad Yusuf</p>
         </div>
         
@@ -132,158 +159,82 @@
                 Salom! Men ChatXMY. Sizga qanday yordam bera olaman?
             </div>
         </div>
+        
         <div class="input-area">
-    <input type="file" id="imageInput" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
-    <button onclick="document.getElementById('imageInput').click()" style="background: #667eea; color: white; border: none; padding: 12px; border-radius: 50%; cursor: pointer; margin-right: 10px;">
-        📷
-    </button>
-    <input type="text" id="input" ...
-      <div class="input-area">
+            <input type="file" id="imageInput" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
+            <button onclick="document.getElementById('imageInput').click()" style="padding: 15px; border-radius: 50%; font-size: 20px;" title="Rasm yuklash">
+                📷
+            </button>
             <input type="text" id="input" placeholder="Savolingizni yozing..." onkeypress="if(event.key==='Enter') sendMessage()">
-           let currentImage = null;
-
-function handleImageUpload(event) {
-    const file = event.target.files[0];
-    if (!file) return;
-    
-    if (file.size > 5 * 1024 * 1024) {
-        alert('❌ Rasm 5KB dan kichik bo\'lishi kerak!');
-        return;
-    }
-    
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        currentImage = e.target.result;
-        addMessage('📷 Rasm yuklandi! Savol yozing...', 'bot');
-    };
-    reader.readAsDataURL(file);
-}
-          const messages = [
-    {role: 'system', content: 'Sen ChatXMY botsan. Xojayev Muhammad Yusuf seni yaratgan. FAQAT O\'ZBEKCHA javob ber! Har doim o\'zbek tilida yoz. Qisqa va aniq javob ber.'},
-    ...history
-];
-
-// Agar rasm bo'lsa
-if (currentImage) {
-    const lastMessage = messages[messages.length - 1];
-    if (lastMessage.role === 'user') {
-        lastMessage.content = [
-            { type: 'text', text: lastMessage.content },
-            { type: 'image_url', image_url: { url: currentImage } }
-        ];
-    }
-    currentImage = null; // Reset
-}
-
-const response = await fetch('/.netlify/functions/chat', {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({
-        model: "llama-3.2-90b-vision-preview", // Vision model!
-        messages: messages
-    })
-});
+            <button onclick="sendMessage()">Yuborish</button>
         </div>
     </div>
-<style>
-    .premium-badge {
-        background: linear-gradient(135deg, #FFD700, #FFA500);
-        color: #000;
-        padding: 5px 15px;
-        border-radius: 20px;
-        font-size: 12px;
-        font-weight: bold;
-        margin-left: 10px;
-    }
-    
-    .limit-warning {
-        background: #fff3cd;
-        color: #856404;
-        padding: 15px;
-        border-radius: 10px;
-        margin: 10px 0;
-        text-align: center;
-    }
-    
-    .upgrade-btn {
-        background: linear-gradient(135deg, #FFD700, #FFA500);
-        color: #000;
-        padding: 10px 20px;
-        border: none;
-        border-radius: 25px;
-        font-weight: bold;
-        cursor: pointer;
-        margin-top: 10px;
-    }
-    
-    .upgrade-btn:hover {
-        transform: scale(1.05);
-    }
-</style>
 
-<script>
-    let history = [];
-    
-    // Premium tizimi - 4 soat limit
-    const DAILY_TIME_LIMIT = 4 * 60 * 60 * 1000; // 4 soat (millisekunda)
-    let isPremium = localStorage.getItem('isPremium') === 'true';
-    let sessionStartTime = Date.now(); // Sessiya boshlanish vaqti
-    
-    function getUsageToday() {
-        const today = new Date().toDateString();
-        const usage = JSON.parse(localStorage.getItem('usage') || '{}');
+    <script>
+        let history = [];
+        let currentImage = null;
         
-        if (usage.date !== today) {
+        // Premium tizimi - 4 soat limit
+        const DAILY_TIME_LIMIT = 4 * 60 * 60 * 1000;
+        let isPremium = localStorage.getItem('isPremium') === 'true';
+        let sessionStartTime = Date.now();
+        
+        function getUsageToday() {
+            const today = new Date().toDateString();
+            const usage = JSON.parse(localStorage.getItem('usage') || '{}');
+            
+            if (usage.date !== today) {
+                usage.date = today;
+                usage.totalTime = 0;
+                localStorage.setItem('usage', JSON.stringify(usage));
+            }
+            
+            return usage.totalTime || 0;
+        }
+        
+        function addUsageTime(duration) {
+            const today = new Date().toDateString();
+            const usage = JSON.parse(localStorage.getItem('usage') || '{}');
             usage.date = today;
-            usage.totalTime = 0;
+            usage.totalTime = (usage.totalTime || 0) + duration;
             localStorage.setItem('usage', JSON.stringify(usage));
         }
         
-        return usage.totalTime || 0;
-    }
-    
-    function addUsageTime(duration) {
-        const today = new Date().toDateString();
-        const usage = JSON.parse(localStorage.getItem('usage') || '{}');
-        usage.date = today;
-        usage.totalTime = (usage.totalTime || 0) + duration;
-        localStorage.setItem('usage', JSON.stringify(usage));
-    }
-    
-    function getRemainingTime() {
-        const used = getUsageToday();
-        const remaining = DAILY_TIME_LIMIT - used;
-        const hours = Math.floor(remaining / (1000 * 60 * 60));
-        const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
-        return { hours, minutes, total: remaining };
-    }
-    
-    function formatTime(hours, minutes) {
-        if (hours > 0) {
-            return `${hours} soat ${minutes} daqiqa`;
+        function getRemainingTime() {
+            const used = getUsageToday();
+            const remaining = DAILY_TIME_LIMIT - used;
+            const hours = Math.floor(remaining / (1000 * 60 * 60));
+            const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
+            return { hours, minutes, total: remaining };
         }
-        return `${minutes} daqiqa`;
-    }
-    
-    function showLimitWarning(timeStr) {
-        const warning = document.createElement('div');
-        warning.className = 'limit-warning';
-        warning.innerHTML = `
-            ⚠️ Sizda bugun <strong>${timeStr}</strong> qoldi!<br>
-            <button class="upgrade-btn" onclick="showPremiumModal()">👑 Premium oling - Cheksiz!</button>
-        `;
         
-        const messages = document.getElementById('messages');
-        messages.insertBefore(warning, messages.firstChild);
+        function formatTime(hours, minutes) {
+            if (hours > 0) {
+                return `${hours} soat ${minutes} daqiqa`;
+            }
+            return `${minutes} daqiqa`;
+        }
         
-        setTimeout(() => warning.remove(), 5000);
-    }
-    
-    function showPremiumModal() {
-        alert(`🎉 Premium rejaga o'ting!
+        function showLimitWarning(timeStr) {
+            const warning = document.createElement('div');
+            warning.className = 'limit-warning';
+            warning.innerHTML = `
+                ⚠️ Sizda bugun <strong>${timeStr}</strong> qoldi!<br>
+                <button class="upgrade-btn" onclick="showPremiumModal()">👑 Premium oling - Cheksiz!</button>
+            `;
+            
+            const messages = document.getElementById('messages');
+            messages.insertBefore(warning, messages.firstChild);
+            
+            setTimeout(() => warning.remove(), 5000);
+        }
+        
+        function showPremiumModal() {
+            alert(`🎉 Premium rejaga o'ting!
 
 ✅ 24/7 Cheksiz gaplashish
 ✅ Tezroq javob
+✅ Rasm yuborish
 ✅ Premium dizayn
 
 💰 Faqat $4.99/oy
@@ -291,119 +242,80 @@ const response = await fetch('/.netlify/functions/chat', {
 📞 Aloqa: +998 94 587 64 00
 💳 Karta: 8600 0607 0665 2055
 👤 Karta egasi: Xo'jayev Mahbubaxon`);
-    }
-    
-    // Premium badge qo'shish
-    if (isPremium) {
-        document.querySelector('.chat-title').innerHTML += ' <span class="premium-badge">👑 Premium</span>';
-    }
-    
-    // Sessiya vaqtini kuzatish
-    let activityTimer = null;
-    
-    function startActivityTracking() {
-        if (!isPremium) {
-            sessionStartTime = Date.now();
         }
-    }
-    
-    function stopActivityTracking() {
-        if (!isPremium && sessionStartTime) {
-            const duration = Date.now() - sessionStartTime;
-            addUsageTime(duration);
-            sessionStartTime = null;
-        }
-    }
-    
-    // Sahifa yopilganda vaqtni saqlash
-    window.addEventListener('beforeunload', stopActivityTracking);
-    
-    // Har 30 soniyada vaqtni yangilash (xavfsizlik uchun)
-    setInterval(() => {
-        if (!isPremium && sessionStartTime) {
-            const duration = Date.now() - sessionStartTime;
-            addUsageTime(duration);
-            sessionStartTime = Date.now();
-        }
-    }, 30000);
-    
-    async function sendMessage() {
-        const input = document.getElementById('input');
-        const message = input.value.trim();
-        if (!message) return;
         
-        // Vaqt limit tekshirish
-        if (!isPremium) {
-            const remaining = getRemainingTime();
+        if (isPremium) {
+            document.getElementById('chatTitle').innerHTML += ' <span class="premium-badge">👑 Premium</span>';
+        }
+        
+        let activityTimer = null;
+        
+        function startActivityTracking() {
+            if (!isPremium) {
+                sessionStartTime = Date.now();
+            }
+        }
+        
+        function stopActivityTracking() {
+            if (!isPremium && sessionStartTime) {
+                const duration = Date.now() - sessionStartTime;
+                addUsageTime(duration);
+                sessionStartTime = null;
+            }
+        }
+        
+        window.addEventListener('beforeunload', stopActivityTracking);
+        
+        setInterval(() => {
+            if (!isPremium && sessionStartTime) {
+                const duration = Date.now() - sessionStartTime;
+                addUsageTime(duration);
+                sessionStartTime = Date.now();
+            }
+        }, 30000);
+        
+        function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
             
-            if (remaining.total <= 0) {
-                addMessage('⏰ Kunlik 4 soat limit tugadi! Ertaga qayta urinib ko\'ring yoki Premium oling!', 'bot');
-                showPremiumModal();
+            if (file.size > 5 * 1024 * 1024) {
+                addMessage('❌ Rasm 10TB dan kichik bo\'lishi kerak!', 'bot');
                 return;
             }
             
-            // 30 daqiqadan kam qolganda ogohlantirish
-            if (remaining.total < 30 * 60 * 1000) {
-                showLimitWarning(formatTime(remaining.hours, remaining.minutes));
-            }
-            
-            startActivityTracking();
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                currentImage = e.target.result;
+                
+                const preview = document.createElement('div');
+                preview.className = 'message user';
+                preview.innerHTML = `<img src="${e.target.result}"><br>📷 Rasm yuklandi! Savol yozing...`;
+                document.getElementById('messages').appendChild(preview);
+                document.getElementById('messages').scrollTop = 999999;
+            };
+            reader.readAsDataURL(file);
         }
-        
-        addMessage(message, 'user');
-        input.value = '';
-        
-        const typing = document.createElement('div');
-        typing.className = 'typing show';
-        typing.textContent = '...';
-        document.getElementById('messages').appendChild(typing);
-        
-        try {
-            history.push({role: 'user', content: message});
-            
-            const response = await fetch('/.netlify/functions/chat', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({
-                    messages: [
-                        {role: 'system', content: 'Sen ChatXMY botsan. Xojayev Muhammad Yusuf seni yaratgan. FAQAT O\'ZBEKCHA javob ber! Har doim o\'zbek tilida yoz. Qisqa va aniq javob ber.'},
-                        ...history
-                    ]
-                })
-            });
-            
-            const data = await response.json();
-            typing.remove();
-            
-            if (data.answer) {
-                history.push({role: 'assistant', content: data.answer});
-                addMessage(data.answer, 'bot');
-            } else {
-                addMessage('Kechirasiz, xatolik yuz berdi.', 'bot');
-            }
-        } catch (error) {
-            typing.remove();
-            addMessage('Xatolik: ' + error.message, 'bot');
-        }
-    }
-    
-    function addMessage(text, type) {
-        const div = document.createElement('div');
-        div.className = 'message ' + type;
-        div.textContent = text;
-        document.getElementById('messages').appendChild(div);
-        document.getElementById('messages').scrollTop = 999999;
-    }
-    
-    // Test uchun: Premium yoqish/o'chirish
-    console.log('Premium test: localStorage.setItem("isPremium", "true")');
-</script>
-        let history = [];
         
         async function sendMessage() {
             const input = document.getElementById('input');
             const message = input.value.trim();
             if (!message) return;
+            
+            if (!isPremium) {
+                const remaining = getRemainingTime();
+                
+                if (remaining.total <= 0) {
+                    addMessage('⏰ Kunlik 4 soat limit tugadi! Ertaga qayta urinib ko\'ring yoki Premium oling!', 'bot');
+                    showPremiumModal();
+                    return;
+                }
+                
+                if (remaining.total < 30 * 60 * 1000) {
+                    showLimitWarning(formatTime(remaining.hours, remaining.minutes));
+                }
+                
+                startActivityTracking();
+            }
             
             addMessage(message, 'user');
             input.value = '';
@@ -416,19 +328,36 @@ const response = await fetch('/.netlify/functions/chat', {
             try {
                 history.push({role: 'user', content: message});
                 
+                const requestBody = {
+                    model: currentImage ? "llama-3.2-90b-vision-preview" : "llama-3.3-70b-versatile",
+                    messages: currentImage ? [
+                        {role: 'system', content: 'Sen ChatXMY botsan. Xojayev Muhammad Yusuf seni yaratgan. FAQAT O\'ZBEKCHA javob ber! Har doim o\'zbek tilida yoz. Qisqa va aniq javob ber.'},
+                        ...history.slice(0, -1),
+                        {
+                            role: 'user',
+                            content: [
+                                { type: 'text', text: message },
+                                { type: 'image_url', image_url: { url: currentImage } }
+                            ]
+                        }
+                    ] : [
+                        {role: 'system', content: 'Sen ChatXMY botsan. Xojayev Muhammad Yusuf seni yaratgan. FAQAT O\'ZBEKCHA javob ber! Har doim o\'zbek tilida yoz. Qisqa va aniq javob ber.'},
+                        ...history
+                    ]
+                };
+                
                 const response = await fetch('/.netlify/functions/chat', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({
-                        messages: [
-                            {role: 'system', content: 'Sen ChatXMY botsan. Xojayev Muhammad Yusuf seni yaratgan. Qisqa va aniq javob ber.'},
-                            ...history
-                        ]
-                    })
+                    body: JSON.stringify(requestBody)
                 });
                 
                 const data = await response.json();
                 typing.remove();
+                
+                if (currentImage) {
+                    currentImage = null;
+                }
                 
                 if (data.answer) {
                     history.push({role: 'assistant', content: data.answer});
@@ -449,6 +378,8 @@ const response = await fetch('/.netlify/functions/chat', {
             document.getElementById('messages').appendChild(div);
             document.getElementById('messages').scrollTop = 999999;
         }
+        
+        console.log('Premium test: localStorage.setItem("isPremium", "true")');
     </script>
 </body>
 </html>
