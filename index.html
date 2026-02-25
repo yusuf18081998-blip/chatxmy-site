@@ -278,8 +278,8 @@
             const file = event.target.files[0];
             if (!file) return;
             
-            if (file.size > 5 * 1024 * 1024) {
-                addMessage('❌ Rasm 10TB dan kichik bo\'lishi kerak!', 'bot');
+            if (file.size > 20 * 1024 * 1024) {
+                addMessage('❌ Rasm 20MB dan kichik bo\'lishi kerak!', 'bot');
                 return;
             }
             
