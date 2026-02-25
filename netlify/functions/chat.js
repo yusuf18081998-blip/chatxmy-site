@@ -1,10 +1,13 @@
+const fetch = require('node-fetch');
+
 exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, body: 'Method Not Allowed' };
   }
 
   try {
-    const { messages } = JSON.parse(event.body);
+    const body = JSON.parse(event.body);
+    const { messages, model } = body;
     
     const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
@@ -13,7 +16,7 @@ exports.handler = async (event) => {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        model: "llama-3.3-70b-versatile",
+        model: model || "llama-3.3-70b-versatile",
         messages: messages,
         temperature: 0.7,
         max_tokens: 800
@@ -31,7 +34,7 @@ exports.handler = async (event) => {
     
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: 'No response' })
+      body: JSON.stringify({ error: 'No response from AI' })
     };
     
   } catch (error) {
