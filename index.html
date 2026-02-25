@@ -132,10 +132,57 @@
                 Salom! Men ChatXMY. Sizga qanday yordam bera olaman?
             </div>
         </div>
-        
         <div class="input-area">
+    <input type="file" id="imageInput" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
+    <button onclick="document.getElementById('imageInput').click()" style="background: #667eea; color: white; border: none; padding: 12px; border-radius: 50%; cursor: pointer; margin-right: 10px;">
+        📷
+    </button>
+    <input type="text" id="input" ...
+      <div class="input-area">
             <input type="text" id="input" placeholder="Savolingizni yozing..." onkeypress="if(event.key==='Enter') sendMessage()">
-            <button onclick="sendMessage()">Yuborish</button>
+           let currentImage = null;
+
+function handleImageUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    
+    if (file.size > 5 * 1024 * 1024) {
+        alert('❌ Rasm 5KB dan kichik bo\'lishi kerak!');
+        return;
+    }
+    
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        currentImage = e.target.result;
+        addMessage('📷 Rasm yuklandi! Savol yozing...', 'bot');
+    };
+    reader.readAsDataURL(file);
+}
+          const messages = [
+    {role: 'system', content: 'Sen ChatXMY botsan. Xojayev Muhammad Yusuf seni yaratgan. FAQAT O\'ZBEKCHA javob ber! Har doim o\'zbek tilida yoz. Qisqa va aniq javob ber.'},
+    ...history
+];
+
+// Agar rasm bo'lsa
+if (currentImage) {
+    const lastMessage = messages[messages.length - 1];
+    if (lastMessage.role === 'user') {
+        lastMessage.content = [
+            { type: 'text', text: lastMessage.content },
+            { type: 'image_url', image_url: { url: currentImage } }
+        ];
+    }
+    currentImage = null; // Reset
+}
+
+const response = await fetch('/.netlify/functions/chat', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({
+        model: "llama-3.2-90b-vision-preview", // Vision model!
+        messages: messages
+    })
+});
         </div>
     </div>
 <style>
