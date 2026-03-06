@@ -6,23 +6,8 @@
     <meta name="google-site-verification" content="Wo7knN2bvwYHX79_M4jz-5L0EL8Ktd_K-_kpnSOWWek" />
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#667eea">
-    <title>ChatXMY - AI Ta'lim Yordamchisi | O'zbekcha</title>
-    <meta name="description" content="ChatXMY - AI sun'iy intellekt bilan o'zbek tilida ta'lim yordamchisi. Matematika, Fizika, Kimyo, Biologiya va boshqa fanlar bo'yicha bepul yordam.">
-    <meta name="keywords" content="chatxmy, ai yordamchi, o'zbek tili, ta'lim, matematika, fizika, kimyo, sun'iy intellekt, bepul, online">
-    <meta name="author" content="Xo'jayev Muhammad Yusuf">
-    <meta property="og:type" content="website">
-    <meta property="og:title" content="ChatXMY - AI Ta'lim Yordamchisi">
-    <meta property="og:description" content="AI bilan o'zbek tilida ta'lim yordamchisi. Barcha fanlar bo'yicha bepul yordam!">
-    <meta property="og:image" content="https://chatxmy.netlify.app/icon-512.png">
-    <meta property="og:url" content="https://chatxmy.netlify.app">
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="ChatXMY - AI Ta'lim Yordamchisi">
-    <meta name="twitter:description" content="AI bilan o'zbek tilida ta'lim yordamchisi">
-    <meta name="twitter:image" content="https://chatxmy.netlify.app/icon-512.png">
-    
-    <!-- Prism.js CSS -->
+    <title>ChatXMY Ultimate</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
-    
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -32,72 +17,36 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 20px;
+            padding: 10px;
         }
         .container {
             background: white;
             border-radius: 20px;
             width: 100%;
-            max-width: 900px;
-            height: 600px;
+            max-width: 1400px;
+            height: 90vh;
             display: flex;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
         }
         .sidebar {
-            width: 250px;
-            background: #f8f9fa;
+            width: 280px;
+            background: linear-gradient(180deg, #f8f9fa 0%, #e9ecef 100%);
             border-radius: 20px 0 0 20px;
-            padding: 20px;
+            padding: 15px;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 12px;
             overflow-y: auto;
         }
-        .sidebar h3 {
-            color: #667eea;
-            font-size: 16px;
-            margin-bottom: 10px;
-        }
-        .history-item {
-            padding: 12px;
-            background: white;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 13px;
-            transition: all 0.3s;
-            border: 2px solid transparent;
-        }
-        .history-item:hover {
-            border-color: #667eea;
-            transform: translateX(5px);
-        }
-        .history-item.active {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-        }
-        .clear-btn {
-            padding: 10px;
-            background: #ff4444;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            margin-top: auto;
-        }
-        .clear-btn:hover {
-            background: #cc0000;
-        }
-        .chat-area {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-        }
+        .chat-area { flex: 1; display: flex; flex-direction: column; }
         .header {
             background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
-            padding: 20px;
+            padding: 15px 20px;
             border-radius: 0 20px 0 0;
-            text-align: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
         .messages {
             flex: 1;
@@ -105,45 +54,40 @@
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 12px;
         }
         .message {
-            max-width: 70%;
-            padding: 12px 18px;
-            border-radius: 18px;
+            max-width: 75%;
+            padding: 12px 16px;
+            border-radius: 16px;
             word-wrap: break-word;
+            animation: slideIn 0.3s ease;
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         .message.user {
             align-self: flex-end;
             background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
         }
-        .message.bot {
-            align-self: flex-start;
-            background: #f0f0f0;
-            color: #333;
-        }
-        .message img {
-            max-width: 200px;
-            border-radius: 10px;
-            margin-bottom: 5px;
-        }
+        .message.bot { align-self: flex-start; background: #f0f0f0; color: #333; }
         .input-area {
-            padding: 20px;
-            border-top: 1px solid #eee;
+            padding: 15px 20px;
+            border-top: 2px solid #eee;
             display: flex;
             gap: 10px;
+            align-items: center;
+            position: relative;
         }
         input[type="text"] {
             flex: 1;
             padding: 12px 18px;
             border: 2px solid #ddd;
             border-radius: 25px;
-            font-size: 15px;
+            font-size: 14px;
             outline: none;
-        }
-        input[type="text"]:focus {
-            border-color: #667eea;
         }
         button {
             padding: 12px 20px;
@@ -151,535 +95,325 @@
             color: white;
             border: none;
             border-radius: 25px;
-            font-size: 15px;
             cursor: pointer;
             font-weight: 600;
         }
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        .plus-btn {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
         }
-        .typing {
-            align-self: flex-start;
-            padding: 12px 18px;
-            background: #f0f0f0;
-            border-radius: 18px;
+        .plus-btn:hover { transform: rotate(45deg); }
+        .plus-btn.active { transform: rotate(45deg); background: #ff4444; }
+        .plus-menu {
+            position: absolute;
+            bottom: 70px;
+            left: 20px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            padding: 10px;
             display: none;
+            flex-direction: column;
+            gap: 5px;
+            z-index: 1000;
+            animation: popUp 0.3s ease;
         }
-        .typing.show { display: block; }
-        .premium-badge {
-            background: linear-gradient(135deg, #FFD700, #FFA500);
-            color: #000;
-            padding: 5px 15px;
+        @keyframes popUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .plus-menu.show { display: flex; }
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        .menu-item:hover {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+        .menu-icon { font-size: 24px; width: 30px; text-align: center; }
+        .menu-text { font-weight: 600; font-size: 14px; }
+        .menu-desc { font-size: 11px; opacity: 0.8; }
+        .lang-selector {
+            padding: 8px 15px;
+            border: 2px solid #667eea;
             border-radius: 20px;
             font-size: 12px;
-            font-weight: bold;
-            margin-left: 10px;
-        }
-        .limit-warning {
-            background: #fff3cd;
-            color: #856404;
-            padding: 15px;
-            border-radius: 10px;
-            margin: 10px 0;
-            text-align: center;
-        }
-        .upgrade-btn {
-            background: linear-gradient(135deg, #FFD700, #FFA500);
-            color: #000;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 25px;
-            font-weight: bold;
             cursor: pointer;
-            margin-top: 10px;
+            background: white;
+            outline: none;
         }
-        .upgrade-btn:hover {
-            transform: scale(1.05);
-        }
-        .code-block {
-            position: relative;
-            margin: 10px 0;
-            border-radius: 8px;
-            overflow: hidden;
-        }
-        .code-header {
-            background: #2d2d2d;
-            color: #ccc;
-            padding: 8px 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 12px;
-            font-family: monospace;
-        }
-        .copy-btn {
-            background: #4CAF50;
-            color: white;
-            border: none;
-            padding: 5px 12px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 11px;
-        }
-        .copy-btn:hover {
-            background: #45a049;
-        }
-        .copy-btn.copied {
-            background: #2196F3;
-        }
-        pre[class*="language-"] {
-            margin: 0 !important;
-            border-radius: 0 0 8px 8px !important;
-        }
-        code[class*="language-"] {
-            font-size: 14px !important;
-        }
-        @media (max-width: 768px) {
-            .sidebar {
-                display: none;
-            }
-            .container {
-                max-width: 100%;
-            }
-        }
+        input[type="file"] { display: none; }
+        @media (max-width: 768px) { .sidebar { display: none; } }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="sidebar">
-            <h3>📝 Tarix</h3>
-            <div id="historyList"></div>
-            <button class="clear-btn" onclick="clearHistory()">🗑️ Tozalash</button>
+            <h3 style="color: #667eea; font-size: 16px;">🎯 Rejimlar</h3>
+            <button style="font-size: 13px;" onclick="setMode('general')">💬 Umumiy</button>
+            <button style="font-size: 13px;" onclick="setMode('math')">🔢 Matematik</button>
+            <button style="font-size: 13px;" onclick="setMode('code')">💻 Dasturlash</button>
+            <button style="font-size: 13px;" onclick="setMode('english')">🇬🇧 English</button>
+            <h3 style="color: #667eea; font-size: 16px; margin-top: 20px;">📝 Tarix</h3>
+            <div id="historyList" style="flex: 1; overflow-y: auto; font-size: 12px;"></div>
+            <button onclick="clearAll()" style="background: #ff4444; font-size: 13px;">🗑️ Tozalash</button>
         </div>
-        
         <div class="chat-area">
             <div class="header">
-                <h1 id="chatTitle">🤖 ChatXMY</h1>
-                <p>AI Yordamchi - Xo'jayev Muhammad Yusuf</p>
+                <div>
+                    <h1 style="font-size: 22px;">🤖 ChatXMY Ultimate</h1>
+                    <p style="font-size: 12px; opacity: 0.9;">AI + Internet + Fayl + Ovoz</p>
+                </div>
+                <select class="lang-selector" id="langSelector">
+                    <option value="uz">🇺🇿 O'zbek</option>
+                    <option value="ru">🇷🇺 Русский</option>
+                    <option value="en">🇬🇧 English</option>
+                    <option value="tr">🇹🇷 Türkçe</option>
+                </select>
             </div>
-            
             <div class="messages" id="messages">
                 <div class="message bot">
-                    Salom! Men ChatXMY. Sizga qanday yordam bera olaman?
+                    🎉 <strong>ChatXMY Ultimate</strong> ga xush kelibsiz!<br><br>
+                    <strong>"+" tugmasini</strong> bosing:<br>
+                    📷 Rasm yuklash<br>📁 Fayl (PDF/DOCX/TXT)<br>🔍 Internet qidiruv<br>🎤 Ovozli chat<br>💻 Kod yaratish<br><br>Savol bering! 🚀
                 </div>
             </div>
-            
             <div class="input-area">
-                <input type="file" id="imageInput" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
-                <button onclick="document.getElementById('imageInput').click()" style="padding: 15px; border-radius: 50%; font-size: 20px;" title="Rasm yuklash">
-                    📷
-                </button>
-                <button onclick="startVoiceInput()" id="voiceBtn" style="padding: 15px; border-radius: 50%; font-size: 20px; background: #764ba2;" title="Ovozli kirish">
-                    🎤
-                </button>
-                <input type="text" id="input" placeholder="Savolingizni yozing..." onkeypress="if(event.key==='Enter') sendMessage()">
-                <button onclick="sendMessage()">Yuborish</button>
+                <input type="file" id="imageInput" accept="image/*" onchange="handleImageUpload(event)">
+                <input type="file" id="fileInput" accept=".pdf,.docx,.txt" onchange="handleFileUpload(event)">
+                <button class="plus-btn" id="plusBtn" onclick="togglePlusMenu()">+</button>
+                <div class="plus-menu" id="plusMenu">
+                    <div class="menu-item" onclick="selectMenuItem('image')">
+                        <span class="menu-icon">📷</span>
+                        <div><div class="menu-text">Rasm</div><div class="menu-desc">JPG, PNG (20MB)</div></div>
+                    </div>
+                    <div class="menu-item" onclick="selectMenuItem('file')">
+                        <span class="menu-icon">📁</span>
+                        <div><div class="menu-text">Fayl</div><div class="menu-desc">PDF, DOCX, TXT</div></div>
+                    </div>
+                    <div class="menu-item" onclick="selectMenuItem('search')">
+                        <span class="menu-icon">🔍</span>
+                        <div><div class="menu-text">Internet</div><div class="menu-desc">Real-time</div></div>
+                    </div>
+                    <div class="menu-item" onclick="selectMenuItem('voice')">
+                        <span class="menu-icon">🎤</span>
+                        <div><div class="menu-text">Ovoz</div><div class="menu-desc">Speech-to-text</div></div>
+                    </div>
+                    <div class="menu-item" onclick="selectMenuItem('code')">
+                        <span class="menu-icon">💻</span>
+                        <div><div class="menu-text">Kod</div><div class="menu-desc">Generation</div></div>
+                    </div>
+                </div>
+                <input type="text" id="input" placeholder="Xabar yozing yoki '+' bosing..." onkeypress="if(event.key==='Enter') sendMessage()">
+                <button onclick="sendMessage()">📤</button>
             </div>
         </div>
     </div>
-
-    <!-- Prism.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markup.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-css.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-java.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script>
-        let history = [];
+        if (!localStorage.getItem('chatxmy_logged_in')) {
+            window.location.href = 'login.html';
+        }
+        const TAVILY_API_KEY = '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';
+        let currentMode = 'general';
+        let searchMode = false;
+        let currentFile = null;
         let currentImage = null;
-        let chatHistory = JSON.parse(localStorage.getItem('chatHistory') || '[]');
-        let currentChatId = null;
-        
-        // Premium tizimi
-        const DAILY_TIME_LIMIT = 4 * 60 * 60 * 1000;
-        let isPremium = localStorage.getItem('isPremium') === 'true';
-        let sessionStartTime = Date.now();
-        
-        function getUsageToday() {
-            const today = new Date().toDateString();
-            const usage = JSON.parse(localStorage.getItem('usage') || '{}');
-            
-            if (usage.date !== today) {
-                usage.date = today;
-                usage.totalTime = 0;
-                localStorage.setItem('usage', JSON.stringify(usage));
-            }
-            
-            return usage.totalTime || 0;
+        let history = [];
+        const modes = {
+            general: 'Sen ChatXMY. Har qanday savolga javob ber.',
+            math: 'Sen matematika ustozi. Qadamma-qadam tushuntir.',
+            code: 'Sen dasturlash mentori. Kod yoz. ```language\nkod\n``` formatida.',
+            english: 'Sen ingliz tili o\'qituvchisi.'
+        };
+        const langPrompts = {
+            uz: 'FAQAT O\'ZBEK tilida!',
+            ru: 'ТОЛЬКО РУССКИЙ!',
+            en: 'ONLY ENGLISH!',
+            tr: 'SADECE TÜRKÇE!'
+        };
+        function togglePlusMenu() {
+            document.getElementById('plusMenu').classList.toggle('show');
+            document.getElementById('plusBtn').classList.toggle('active');
         }
-        
-        function addUsageTime(duration) {
-            const today = new Date().toDateString();
-            const usage = JSON.parse(localStorage.getItem('usage') || '{}');
-            usage.date = today;
-            usage.totalTime = (usage.totalTime || 0) + duration;
-            localStorage.setItem('usage', JSON.stringify(usage));
-        }
-        
-        function getRemainingTime() {
-            const used = getUsageToday();
-            const remaining = DAILY_TIME_LIMIT - used;
-            const hours = Math.floor(remaining / (1000 * 60 * 60));
-            const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
-            return { hours, minutes, total: remaining };
-        }
-        
-        function formatTime(hours, minutes) {
-            if (hours > 0) {
-                return `${hours} soat ${minutes} daqiqa`;
-            }
-            return `${minutes} daqiqa`;
-        }
-        
-        function showLimitWarning(timeStr) {
-            const warning = document.createElement('div');
-            warning.className = 'limit-warning';
-            warning.innerHTML = `
-                ⚠️ Sizda bugun <strong>${timeStr}</strong> qoldi!<br>
-                <button class="upgrade-btn" onclick="showPremiumModal()">👑 Premium oling - Cheksiz!</button>
-            `;
-            
-            const messages = document.getElementById('messages');
-            messages.insertBefore(warning, messages.firstChild);
-            
-            setTimeout(() => warning.remove(), 5000);
-        }
-        
-        function showPremiumModal() {
-            alert(`🎉 Premium rejaga o'ting!
-
-✅ 24/7 Cheksiz gaplashish
-✅ Tezroq javob
-✅ Rasm yuborish
-✅ Tarix saqlash
-✅ Premium dizayn
-
-💰 Faqat $4.99/oy
-
-📞 Aloqa: +998 94 587 64 00
-💳 Karta: 8600 0607 0665 2055
-👤 Karta egasi: Xo'jayev Mahbubaxon`);
-        }
-        
-        if (isPremium) {
-            document.getElementById('chatTitle').innerHTML += ' <span class="premium-badge">👑 Premium</span>';
-        }
-        
-        window.addEventListener('beforeunload', () => {
-            if (sessionStartTime) {
-                const duration = Date.now() - sessionStartTime;
-                addUsageTime(duration);
-            }
-        });
-        
-        setInterval(() => {
-            if (!isPremium && sessionStartTime) {
-                const duration = Date.now() - sessionStartTime;
-                addUsageTime(duration);
-                sessionStartTime = Date.now();
-            }
-        }, 30000);
-        
-        // Tarix funksiyalari
-        function loadHistory() {
-            const historyList = document.getElementById('historyList');
-            historyList.innerHTML = '';
-            
-            chatHistory.slice().reverse().forEach((chat, index) => {
-                const item = document.createElement('div');
-                item.className = 'history-item';
-                if (chat.id === currentChatId) item.classList.add('active');
-                
-                const preview = chat.messages[0]?.content?.substring(0, 30) || 'Yangi chat';
-                const date = new Date(chat.timestamp).toLocaleDateString('uz-UZ');
-                
-                item.innerHTML = `
-                    <div style="font-weight: bold; margin-bottom: 5px;">${preview}...</div>
-                    <div style="font-size: 11px; color: #999;">${date}</div>
-                `;
-                
-                item.onclick = () => loadChat(chat.id);
-                historyList.appendChild(item);
-            });
-        }
-        
-        function saveCurrentChat() {
-            if (history.length === 0) return;
-            
-            if (!currentChatId) {
-                currentChatId = Date.now().toString();
-                chatHistory.push({
-                    id: currentChatId,
-                    timestamp: Date.now(),
-                    messages: []
-                });
-            }
-            
-            const chat = chatHistory.find(c => c.id === currentChatId);
-            if (chat) {
-                chat.messages = [...history];
-                localStorage.setItem('chatHistory', JSON.stringify(chatHistory));
-                loadHistory();
+        function selectMenuItem(type) {
+            togglePlusMenu();
+            switch(type) {
+                case 'image': document.getElementById('imageInput').click(); break;
+                case 'file': document.getElementById('fileInput').click(); break;
+                case 'search':
+                    searchMode = !searchMode;
+                    addMessage(searchMode ? '🔍 Internet yoqildi!' : '💬 Oddiy chat', 'bot');
+                    break;
+                case 'voice': startVoiceInput(); break;
+                case 'code':
+                    currentMode = 'code';
+                    addMessage('💻 Kod rejimi!', 'bot');
+                    break;
             }
         }
-        
-        function loadChat(chatId) {
-            const chat = chatHistory.find(c => c.id === chatId);
-            if (!chat) return;
-            
-            currentChatId = chatId;
-            history = [...chat.messages];
-            
-            const messagesDiv = document.getElementById('messages');
-            messagesDiv.innerHTML = '';
-            
-            history.forEach(msg => {
-                addMessage(msg.content, msg.role === 'user' ? 'user' : 'bot', false);
-            });
-            
-            loadHistory();
+        function setMode(mode) {
+            currentMode = mode;
+            const names = { general: 'Umumiy', math: 'Matematik', code: 'Dasturlash', english: 'English' };
+            addMessage(`🎯 ${names[mode]} rejimi!`, 'bot');
         }
-        
-        function clearHistory() {
-            if (confirm('Barcha tarixni o\'chirmoqchimisiz?')) {
-                chatHistory = [];
-                localStorage.removeItem('chatHistory');
-                loadHistory();
-                newChat();
-            }
-        }
-        
-        function newChat() {
-            currentChatId = null;
-            history = [];
-            const messagesDiv = document.getElementById('messages');
-            messagesDiv.innerHTML = '<div class="message bot">Salom! Men ChatXMY. Sizga qanday yordam bera olaman?</div>';
-            loadHistory();
-        }
-        
-        // Rasm yuklash
         function handleImageUpload(event) {
             const file = event.target.files[0];
-            if (!file) return;
-            
-            if (file.size > 20 * 1024 * 1024) {
-                addMessage('❌ Rasm 20MB dan kichik bo\'lishi kerak!', 'bot');
-                return;
-            }
-            
+            if (!file || file.size > 20 * 1024 * 1024) return;
             const reader = new FileReader();
             reader.onload = function(e) {
                 currentImage = e.target.result;
-                
                 const preview = document.createElement('div');
                 preview.className = 'message user';
-                preview.innerHTML = `<img src="${e.target.result}"><br>📷 Rasm yuklandi! Savol yozing...`;
+                preview.innerHTML = `<img src="${e.target.result}" style="max-width: 250px; border-radius: 10px;">`;
                 document.getElementById('messages').appendChild(preview);
                 document.getElementById('messages').scrollTop = 999999;
+                addMessage('📷 Rasm yuklandi!', 'bot');
             };
             reader.readAsDataURL(file);
         }
-        
-        // Ovozli chat
-        let recognition = null;
-        let synthesis = window.speechSynthesis;
-        
+        async function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const fileType = file.name.split('.').pop().toLowerCase();
+            let fileContent = '';
+            try {
+                if (fileType === 'txt') {
+                    fileContent = await file.text();
+                } else if (fileType === 'pdf') {
+                    const arrayBuffer = await file.arrayBuffer();
+                    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+                    for (let i = 1; i <= Math.min(pdf.numPages, 10); i++) {
+                        const page = await pdf.getPage(i);
+                        const content = await page.getTextContent();
+                        fileContent += content.items.map(item => item.str).join(' ') + '\n';
+                    }
+                } else if (fileType === 'docx') {
+                    const arrayBuffer = await file.arrayBuffer();
+                    const result = await mammoth.extractRawText({ arrayBuffer });
+                    fileContent = result.value;
+                }
+                currentFile = { name: file.name, content: fileContent.substring(0, 10000) };
+                addMessage(`📁 ${file.name} yuklandi!`, 'bot');
+            } catch (error) {
+                addMessage(`❌ Xatolik: ${error.message}`, 'bot');
+            }
+        }
         function startVoiceInput() {
-            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-                addMessage('❌ Sizning brauzeringiz ovozni qo\'llab-quvvatlamaydi!', 'bot');
+            if (!('webkitSpeechRecognition' in window)) {
+                addMessage('❌ Ovoz qo\'llab-quvvatlanmaydi!', 'bot');
                 return;
             }
-            
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            recognition = new SpeechRecognition();
+            const recognition = new SpeechRecognition();
             recognition.lang = 'uz-UZ';
-            recognition.interimResults = false;
-            recognition.maxAlternatives = 1;
-            
-            const voiceBtn = document.getElementById('voiceBtn');
-            voiceBtn.textContent = '🔴';
-            voiceBtn.style.background = '#ff4444';
-            
             recognition.onresult = function(event) {
-                const transcript = event.results[0][0].transcript;
-                document.getElementById('input').value = transcript;
-                voiceBtn.textContent = '🎤';
-                voiceBtn.style.background = '#764ba2';
+                document.getElementById('input').value = event.results[0][0].transcript;
                 setTimeout(() => sendMessage(), 500);
             };
-            
-            recognition.onerror = function(event) {
-                addMessage('❌ Ovoz tanilmadi. Qayta urinib ko\'ring!', 'bot');
-                voiceBtn.textContent = '🎤';
-                voiceBtn.style.background = '#764ba2';
-            };
-            
-            recognition.onend = function() {
-                voiceBtn.textContent = '🎤';
-                voiceBtn.style.background = '#764ba2';
-            };
-            
             recognition.start();
             addMessage('🎤 Gapiring...', 'bot');
         }
-        
-        function speakText(text) {
-            synthesis.cancel();
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = 'uz-UZ';
-            utterance.rate = 0.9;
-            utterance.pitch = 1;
-            utterance.volume = 1;
-            synthesis.speak(utterance);
-        }
-        
         async function sendMessage() {
             const input = document.getElementById('input');
             const message = input.value.trim();
-            if (!message) return;
-            
-            if (!isPremium) {
-                const remaining = getRemainingTime();
-                
-                if (remaining.total <= 0) {
-                    addMessage('⏰ Kunlik 4 soat limit tugadi! Ertaga qayta urinib ko\'ring yoki Premium oling!', 'bot');
-                    showPremiumModal();
-                    return;
-                }
-                
-                if (remaining.total < 30 * 60 * 1000) {
-                    showLimitWarning(formatTime(remaining.hours, remaining.minutes));
-                }
-                
-                sessionStartTime = Date.now();
-            }
-            
-            addMessage(message, 'user');
+            if (!message && !currentFile && !currentImage) return;
+            if (message) addMessage(message, 'user');
             input.value = '';
-            
             const typing = document.createElement('div');
-            typing.className = 'typing show';
+            typing.className = 'message bot';
             typing.textContent = '...';
             document.getElementById('messages').appendChild(typing);
-            
             try {
-                history.push({role: 'user', content: message});
-                
-                const requestBody = {
-                    model: currentImage ? "llama-3.2-90b-vision-preview" : "llama-3.3-70b-versatile",
-                    messages: currentImage ? [
-                        {role: 'system', content: 'Sen ChatXMY botsan. Xojayev Muhammad Yusuf seni yaratgan. FAQAT O\'ZBEKCHA javob ber! Har doim o\'zbek tilida yoz. Qisqa va aniq javob ber. Agar kod yozsang, markdown kod bloklaridan foydalaning: ```language\nkod\n```'},
-                        ...history.slice(0, -1),
-                        {
-                            role: 'user',
-                            content: [
-                                { type: 'text', text: message },
-                                { type: 'image_url', image_url: { url: currentImage } }
-                            ]
-                        }
-                    ] : [
-                        {role: 'system', content: 'Sen ChatXMY botsan. Xojayev Muhammad Yusuf seni yaratgan. FAQAT O\'ZBEKCHA javob ber! Har doim o\'zbek tilida yoz. Qisqa va aniq javob ber. Agar kod yozsang, markdown kod bloklaridan foydalaning: ```language\nkod\n```'},
-                        ...history
-                    ]
-                };
-                
+                const lang = document.getElementById('langSelector').value;
+                let systemPrompt = modes[currentMode] + ' ' + langPrompts[lang];
+                let userPrompt = message || 'Bu haqida aytib ber';
+                if (currentFile) {
+                    userPrompt = `FAYL: ${currentFile.name}\n\n${currentFile.content}\n\nSAVOL: ${message}`;
+                    currentFile = null;
+                }
+                if (searchMode && message) {
+                    const searchResults = await fetch('https://api.tavily.com/search', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            api_key: TAVILY_API_KEY,
+                            query: message,
+                            search_depth: 'basic',
+                            max_results: 3
+                        })
+                    }).then(r => r.json());
+                    if (searchResults?.results) {
+                        let context = 'INTERNET:\n';
+                        searchResults.results.forEach((r, i) => {
+                            context += `${i+1}. ${r.title}: ${r.content}\n`;
+                        });
+                        userPrompt = context + '\nSAVOL: ' + message;
+                    }
+                }
                 const response = await fetch('/.netlify/functions/chat', {
                     method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify(requestBody)
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        model: currentImage ? "llama-3.2-90b-vision-preview" : "llama-3.3-70b-versatile",
+                        messages: currentImage ? [
+                            { role: 'system', content: systemPrompt },
+                            { role: 'user', content: [
+                                { type: 'text', text: userPrompt },
+                                { type: 'image_url', image_url: { url: currentImage } }
+                            ]}
+                        ] : [
+                            { role: 'system', content: systemPrompt },
+                            { role: 'user', content: userPrompt }
+                        ]
+                    })
                 });
-                
                 const data = await response.json();
                 typing.remove();
-                
-                if (currentImage) {
-                    currentImage = null;
-                }
-                
-                if (data.answer) {
-                    history.push({role: 'assistant', content: data.answer});
-                    addMessage(data.answer, 'bot');
-                    speakText(data.answer);
-                    saveCurrentChat();
-                } else {
-                    addMessage('Kechirasiz, xatolik yuz berdi.', 'bot');
-                }
+                if (currentImage) currentImage = null;
+                if (data.answer) addMessage(data.answer, 'bot');
             } catch (error) {
                 typing.remove();
-                addMessage('Xatolik: ' + error.message, 'bot');
+                addMessage('❌ Xatolik: ' + error.message, 'bot');
             }
         }
-        
-        function addMessage(text, type, save = true) {
+        function addMessage(text, type) {
             const div = document.createElement('div');
             div.className = 'message ' + type;
-            
-            const codeBlockRegex = /```(\w+)?\n([\s\S]*?)```/g;
-            
-            if (codeBlockRegex.test(text)) {
-                let html = text;
-                
-                html = html.replace(/```(\w+)?\n([\s\S]*?)```/g, (match, lang, code) => {
-                    const language = lang || 'javascript';
-                    const codeId = 'code-' + Date.now() + Math.random();
-                    
-                    return `
-                        <div class="code-block">
-                            <div class="code-header">
-                                <span>${language.toUpperCase()}</span>
-                                <button class="copy-btn" onclick="copyCode('${codeId}')">📋 Copy</button>
-                            </div>
-                            <pre><code id="${codeId}" class="language-${language}">${escapeHtml(code.trim())}</code></pre>
-                        </div>
-                    `;
-                });
-                
-                div.innerHTML = html;
-                
-                setTimeout(() => {
-                    div.querySelectorAll('code').forEach(block => {
-                        Prism.highlightElement(block);
-                    });
-                }, 10);
-            } else {
-                div.textContent = text;
-            }
-            
+            div.innerHTML = text;
             document.getElementById('messages').appendChild(div);
             document.getElementById('messages').scrollTop = 999999;
         }
-        
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
+        function clearAll() {
+            if (confirm('O\'chirish?')) location.reload();
         }
-        
-        function copyCode(codeId) {
-            const codeElement = document.getElementById(codeId);
-            const code = codeElement.textContent;
-            
-            navigator.clipboard.writeText(code).then(() => {
-                const btn = event.target;
-                const originalText = btn.textContent;
-                btn.textContent = '✅ Nusxalandi!';
-                btn.classList.add('copied');
-                
-                setTimeout(() => {
-                    btn.textContent = originalText;
-                    btn.classList.remove('copied');
-                }, 2000);
-            });
-        }
-        
-        // Boshlang'ich yuklash
-        loadHistory();
-        
-        console.log('Premium test: localStorage.setItem("isPremium", "true")');
+        document.addEventListener('click', function(event) {
+            const menu = document.getElementById('plusMenu');
+            const btn = document.getElementById('plusBtn');
+            if (!menu.contains(event.target) && event.target !== btn) {
+                menu.classList.remove('show');
+                btn.classList.remove('active');
+            }
+        });
     </script>
 </body>
 </html>
