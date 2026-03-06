@@ -23,27 +23,17 @@
             background: white;
             border-radius: 20px;
             width: 100%;
-            max-width: 1400px;
+            max-width: 900px;
             height: 90vh;
             display: flex;
+            flex-direction: column;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
         }
-        .sidebar {
-            width: 280px;
-            background: linear-gradient(180deg, #f8f9fa 0%, #e9ecef 100%);
-            border-radius: 20px 0 0 20px;
-            padding: 15px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            overflow-y: auto;
-        }
-        .chat-area { flex: 1; display: flex; flex-direction: column; }
         .header {
             background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
             padding: 15px 20px;
-            border-radius: 0 20px 0 0;
+            border-radius: 20px 20px 0 0;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -99,12 +89,12 @@
             font-weight: 600;
         }
         .plus-btn {
-            width: 45px;
-            height: 45px;
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
             background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
-            font-size: 24px;
+            font-size: 28px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -112,11 +102,11 @@
             transition: all 0.3s;
             border: none;
         }
-        .plus-btn:hover { transform: rotate(45deg); }
+        .plus-btn:hover { transform: rotate(90deg) scale(1.1); }
         .plus-btn.active { transform: rotate(45deg); background: #ff4444; }
         .plus-menu {
             position: absolute;
-            bottom: 70px;
+            bottom: 75px;
             left: 20px;
             background: white;
             border-radius: 15px;
@@ -127,17 +117,32 @@
             gap: 5px;
             z-index: 1000;
             animation: popUp 0.3s ease;
+            max-height: 400px;
+            overflow-y: auto;
         }
         @keyframes popUp {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
         .plus-menu.show { display: flex; }
+        .menu-section {
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+            margin-bottom: 5px;
+        }
+        .menu-section:last-child { border-bottom: none; }
+        .menu-section-title {
+            font-size: 11px;
+            font-weight: bold;
+            color: #999;
+            padding: 5px 10px;
+            text-transform: uppercase;
+        }
         .menu-item {
             display: flex;
             align-items: center;
             gap: 12px;
-            padding: 12px 16px;
+            padding: 10px 12px;
             border-radius: 10px;
             cursor: pointer;
             transition: all 0.2s;
@@ -147,83 +152,91 @@
             background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
         }
-        .menu-icon { font-size: 24px; width: 30px; text-align: center; }
-        .menu-text { font-weight: 600; font-size: 14px; }
-        .menu-desc { font-size: 11px; opacity: 0.8; }
+        .menu-icon { font-size: 20px; width: 25px; text-align: center; }
+        .menu-text { font-weight: 600; font-size: 13px; }
         .lang-selector {
             padding: 8px 15px;
-            border: 2px solid #667eea;
+            border: 2px solid #fff;
             border-radius: 20px;
             font-size: 12px;
             cursor: pointer;
-            background: white;
+            background: transparent;
+            color: white;
             outline: none;
         }
+        .lang-selector option { color: #333; }
         input[type="file"] { display: none; }
-        @media (max-width: 768px) { .sidebar { display: none; } }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="sidebar">
-            <h3 style="color: #667eea; font-size: 16px;">🎯 Rejimlar</h3>
-            <button style="font-size: 13px;" onclick="setMode('general')">💬 Umumiy</button>
-            <button style="font-size: 13px;" onclick="setMode('math')">🔢 Matematik</button>
-            <button style="font-size: 13px;" onclick="setMode('code')">💻 Dasturlash</button>
-            <button style="font-size: 13px;" onclick="setMode('english')">🇬🇧 English</button>
-            <h3 style="color: #667eea; font-size: 16px; margin-top: 20px;">📝 Tarix</h3>
-            <div id="historyList" style="flex: 1; overflow-y: auto; font-size: 12px;"></div>
-            <button onclick="clearAll()" style="background: #ff4444; font-size: 13px;">🗑️ Tozalash</button>
+        <div class="header">
+            <div>
+                <h1 style="font-size: 22px;">🤖 ChatXMY</h1>
+                <p style="font-size: 12px; opacity: 0.9;" id="modeDisplay">💬 Umumiy rejim</p>
+            </div>
+            <select class="lang-selector" id="langSelector">
+                <option value="uz">🇺🇿 O'zbek</option>
+                <option value="ru">🇷🇺 Русский</option>
+                <option value="en">🇬🇧 English</option>
+                <option value="tr">🇹🇷 Türkçe</option>
+            </select>
         </div>
-        <div class="chat-area">
-            <div class="header">
-                <div>
-                    <h1 style="font-size: 22px;">🤖 ChatXMY Ultimate</h1>
-                    <p style="font-size: 12px; opacity: 0.9;">AI + Internet + Fayl + Ovoz</p>
-                </div>
-                <select class="lang-selector" id="langSelector">
-                    <option value="uz">🇺🇿 O'zbek</option>
-                    <option value="ru">🇷🇺 Русский</option>
-                    <option value="en">🇬🇧 English</option>
-                    <option value="tr">🇹🇷 Türkçe</option>
-                </select>
+        <div class="messages" id="messages">
+            <div class="message bot">
+                🎉 <strong>ChatXMY</strong> ga xush kelibsiz!<br><br>
+                <strong>"+" tugmasini bosing</strong> va tanlang:<br>
+                🎯 Rejimlar (Umumiy, Matematik, Dasturlash, English)<br>
+                📷 Rasm • 📁 Fayl • 🔍 Internet • 🎤 Ovoz<br><br>
+                Savol bering! 🚀
             </div>
-            <div class="messages" id="messages">
-                <div class="message bot">
-                    🎉 <strong>ChatXMY Ultimate</strong> ga xush kelibsiz!<br><br>
-                    <strong>"+" tugmasini</strong> bosing:<br>
-                    📷 Rasm yuklash<br>📁 Fayl (PDF/DOCX/TXT)<br>🔍 Internet qidiruv<br>🎤 Ovozli chat<br>💻 Kod yaratish<br><br>Savol bering! 🚀
+        </div>
+        <div class="input-area">
+            <input type="file" id="imageInput" accept="image/*" onchange="handleImageUpload(event)">
+            <input type="file" id="fileInput" accept=".pdf,.docx,.txt" onchange="handleFileUpload(event)">
+            <button class="plus-btn" id="plusBtn" onclick="togglePlusMenu()">+</button>
+            <div class="plus-menu" id="plusMenu">
+                <div class="menu-section">
+                    <div class="menu-section-title">🎯 Rejimlar</div>
+                    <div class="menu-item" onclick="selectMode('general')">
+                        <span class="menu-icon">💬</span>
+                        <span class="menu-text">Umumiy</span>
+                    </div>
+                    <div class="menu-item" onclick="selectMode('math')">
+                        <span class="menu-icon">🔢</span>
+                        <span class="menu-text">Matematik</span>
+                    </div>
+                    <div class="menu-item" onclick="selectMode('code')">
+                        <span class="menu-icon">💻</span>
+                        <span class="menu-text">Dasturlash</span>
+                    </div>
+                    <div class="menu-item" onclick="selectMode('english')">
+                        <span class="menu-icon">🇬🇧</span>
+                        <span class="menu-text">English</span>
+                    </div>
                 </div>
-            </div>
-            <div class="input-area">
-                <input type="file" id="imageInput" accept="image/*" onchange="handleImageUpload(event)">
-                <input type="file" id="fileInput" accept=".pdf,.docx,.txt" onchange="handleFileUpload(event)">
-                <button class="plus-btn" id="plusBtn" onclick="togglePlusMenu()">+</button>
-                <div class="plus-menu" id="plusMenu">
+                <div class="menu-section">
+                    <div class="menu-section-title">🛠️ Vositalar</div>
                     <div class="menu-item" onclick="selectMenuItem('image')">
                         <span class="menu-icon">📷</span>
-                        <div><div class="menu-text">Rasm</div><div class="menu-desc">JPG, PNG (20MB)</div></div>
+                        <span class="menu-text">Rasm yuklash</span>
                     </div>
                     <div class="menu-item" onclick="selectMenuItem('file')">
                         <span class="menu-icon">📁</span>
-                        <div><div class="menu-text">Fayl</div><div class="menu-desc">PDF, DOCX, TXT</div></div>
+                        <span class="menu-text">Fayl yuklash</span>
                     </div>
                     <div class="menu-item" onclick="selectMenuItem('search')">
                         <span class="menu-icon">🔍</span>
-                        <div><div class="menu-text">Internet</div><div class="menu-desc">Real-time</div></div>
+                        <span class="menu-text">Internet qidiruv</span>
                     </div>
                     <div class="menu-item" onclick="selectMenuItem('voice')">
                         <span class="menu-icon">🎤</span>
-                        <div><div class="menu-text">Ovoz</div><div class="menu-desc">Speech-to-text</div></div>
-                    </div>
-                    <div class="menu-item" onclick="selectMenuItem('code')">
-                        <span class="menu-icon">💻</span>
-                        <div><div class="menu-text">Kod</div><div class="menu-desc">Generation</div></div>
+                        <span class="menu-text">Ovozli chat</span>
                     </div>
                 </div>
-                <input type="text" id="input" placeholder="Xabar yozing yoki '+' bosing..." onkeypress="if(event.key==='Enter') sendMessage()">
-                <button onclick="sendMessage()">📤</button>
             </div>
+            <input type="text" id="input" placeholder="Xabar yozing yoki '+' bosing..." onkeypress="if(event.key==='Enter') sendMessage()">
+            <button onclick="sendMessage()">📤</button>
         </div>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
@@ -240,10 +253,10 @@
         let currentImage = null;
         let history = [];
         const modes = {
-            general: 'Sen ChatXMY. Har qanday savolga javob ber.',
-            math: 'Sen matematika ustozi. Qadamma-qadam tushuntir.',
-            code: 'Sen dasturlash mentori. Kod yoz. ```language\nkod\n``` formatida.',
-            english: 'Sen ingliz tili o\'qituvchisi.'
+            general: { name: 'Umumiy', icon: '💬', prompt: 'Sen ChatXMY. Har qanday savolga javob ber.' },
+            math: { name: 'Matematik', icon: '🔢', prompt: 'Sen matematika ustozi. Qadamma-qadam tushuntir.' },
+            code: { name: 'Dasturlash', icon: '💻', prompt: 'Sen dasturlash mentori. Kod yoz. ```language\\nkod\\n``` formatida.' },
+            english: { name: 'English', icon: '🇬🇧', prompt: 'Sen ingliz tili o\'qituvchisi.' }
         };
         const langPrompts = {
             uz: 'FAQAT O\'ZBEK tilida!',
@@ -251,10 +264,25 @@
             en: 'ONLY ENGLISH!',
             tr: 'SADECE TÜRKÇE!'
         };
+        
+        function updateModeDisplay() {
+            const mode = modes[currentMode];
+            document.getElementById('modeDisplay').textContent = `${mode.icon} ${mode.name} rejim`;
+        }
+        
         function togglePlusMenu() {
             document.getElementById('plusMenu').classList.toggle('show');
             document.getElementById('plusBtn').classList.toggle('active');
         }
+        
+        function selectMode(mode) {
+            currentMode = mode;
+            updateModeDisplay();
+            togglePlusMenu();
+            const modeInfo = modes[mode];
+            addMessage(`${modeInfo.icon} <strong>${modeInfo.name}</strong> rejimi yoqildi!`, 'bot');
+        }
+        
         function selectMenuItem(type) {
             togglePlusMenu();
             switch(type) {
@@ -262,20 +290,12 @@
                 case 'file': document.getElementById('fileInput').click(); break;
                 case 'search':
                     searchMode = !searchMode;
-                    addMessage(searchMode ? '🔍 Internet yoqildi!' : '💬 Oddiy chat', 'bot');
+                    addMessage(searchMode ? '🔍 Internet qidiruv yoqildi!' : '💬 Oddiy chat rejimi', 'bot');
                     break;
                 case 'voice': startVoiceInput(); break;
-                case 'code':
-                    currentMode = 'code';
-                    addMessage('💻 Kod rejimi!', 'bot');
-                    break;
             }
         }
-        function setMode(mode) {
-            currentMode = mode;
-            const names = { general: 'Umumiy', math: 'Matematik', code: 'Dasturlash', english: 'English' };
-            addMessage(`🎯 ${names[mode]} rejimi!`, 'bot');
-        }
+        
         function handleImageUpload(event) {
             const file = event.target.files[0];
             if (!file || file.size > 20 * 1024 * 1024) return;
@@ -287,10 +307,11 @@
                 preview.innerHTML = `<img src="${e.target.result}" style="max-width: 250px; border-radius: 10px;">`;
                 document.getElementById('messages').appendChild(preview);
                 document.getElementById('messages').scrollTop = 999999;
-                addMessage('📷 Rasm yuklandi!', 'bot');
+                addMessage('📷 Rasm yuklandi! Savol bering...', 'bot');
             };
             reader.readAsDataURL(file);
         }
+        
         async function handleFileUpload(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -305,7 +326,7 @@
                     for (let i = 1; i <= Math.min(pdf.numPages, 10); i++) {
                         const page = await pdf.getPage(i);
                         const content = await page.getTextContent();
-                        fileContent += content.items.map(item => item.str).join(' ') + '\n';
+                        fileContent += content.items.map(item => item.str).join(' ') + '\\n';
                     }
                 } else if (fileType === 'docx') {
                     const arrayBuffer = await file.arrayBuffer();
@@ -313,11 +334,12 @@
                     fileContent = result.value;
                 }
                 currentFile = { name: file.name, content: fileContent.substring(0, 10000) };
-                addMessage(`📁 ${file.name} yuklandi!`, 'bot');
+                addMessage(`📁 ${file.name} yuklandi! Savol bering...`, 'bot');
             } catch (error) {
                 addMessage(`❌ Xatolik: ${error.message}`, 'bot');
             }
         }
+        
         function startVoiceInput() {
             if (!('webkitSpeechRecognition' in window)) {
                 addMessage('❌ Ovoz qo\'llab-quvvatlanmaydi!', 'bot');
@@ -333,6 +355,7 @@
             recognition.start();
             addMessage('🎤 Gapiring...', 'bot');
         }
+        
         async function sendMessage() {
             const input = document.getElementById('input');
             const message = input.value.trim();
@@ -345,10 +368,10 @@
             document.getElementById('messages').appendChild(typing);
             try {
                 const lang = document.getElementById('langSelector').value;
-                let systemPrompt = modes[currentMode] + ' ' + langPrompts[lang];
+                let systemPrompt = modes[currentMode].prompt + ' ' + langPrompts[lang];
                 let userPrompt = message || 'Bu haqida aytib ber';
                 if (currentFile) {
-                    userPrompt = `FAYL: ${currentFile.name}\n\n${currentFile.content}\n\nSAVOL: ${message}`;
+                    userPrompt = `FAYL: ${currentFile.name}\\n\\n${currentFile.content}\\n\\nSAVOL: ${message}`;
                     currentFile = null;
                 }
                 if (searchMode && message) {
@@ -363,11 +386,11 @@
                         })
                     }).then(r => r.json());
                     if (searchResults?.results) {
-                        let context = 'INTERNET:\n';
+                        let context = 'INTERNET:\\n';
                         searchResults.results.forEach((r, i) => {
-                            context += `${i+1}. ${r.title}: ${r.content}\n`;
+                            context += `${i+1}. ${r.title}: ${r.content}\\n`;
                         });
-                        userPrompt = context + '\nSAVOL: ' + message;
+                        userPrompt = context + '\\nSAVOL: ' + message;
                     }
                 }
                 const response = await fetch('/.netlify/functions/chat', {
@@ -396,6 +419,7 @@
                 addMessage('❌ Xatolik: ' + error.message, 'bot');
             }
         }
+        
         function addMessage(text, type) {
             const div = document.createElement('div');
             div.className = 'message ' + type;
@@ -403,9 +427,7 @@
             document.getElementById('messages').appendChild(div);
             document.getElementById('messages').scrollTop = 999999;
         }
-        function clearAll() {
-            if (confirm('O\'chirish?')) location.reload();
-        }
+        
         document.addEventListener('click', function(event) {
             const menu = document.getElementById('plusMenu');
             const btn = document.getElementById('plusBtn');
@@ -414,6 +436,8 @@
                 btn.classList.remove('active');
             }
         });
+        
+        updateModeDisplay();
     </script>
 </body>
 </html>
