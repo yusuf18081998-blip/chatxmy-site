@@ -3,7 +3,7 @@
   "short_name": "ChatXMY",
   "icons": [
     {
-      "src": "/icon-512.png",
+      "src": "/icon-512.png.png",
       "sizes": "512x512",
       "type": "image/png"
     }
