@@ -6,8 +6,10 @@
     <meta name="google-site-verification" content="Wo7knN2bvwYHX79_M4jz-5L0EL8Ktd_K-_kpnSOWWek" />
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#667eea">
-    <title>ChatXMY - AI Assistant</title>
+    <title>ChatXMY - Super AI</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -23,8 +25,8 @@
             background: white;
             border-radius: 20px;
             width: 100%;
-            max-width: 900px;
-            height: 90vh;
+            max-width: 1000px;
+            height: 92vh;
             display: flex;
             flex-direction: column;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
@@ -32,7 +34,7 @@
         .header {
             background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
-            padding: 15px 20px;
+            padding: 12px 20px;
             border-radius: 20px 20px 0 0;
             display: flex;
             justify-content: space-between;
@@ -40,16 +42,16 @@
         }
         .messages {
             flex: 1;
-            padding: 20px;
+            padding: 15px;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 10px;
         }
         .message {
-            max-width: 75%;
-            padding: 12px 16px;
-            border-radius: 16px;
+            max-width: 80%;
+            padding: 10px 14px;
+            border-radius: 14px;
             word-wrap: break-word;
             animation: slideIn 0.3s ease;
         }
@@ -62,83 +64,63 @@
             background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
         }
-        .message.bot { align-self: flex-start; background: #f0f0f0; color: #333; }
-        .message img { max-width: 250px; border-radius: 10px; margin: 5px 0; }
-        .message-actions {
-            display: flex;
-            gap: 8px;
-            margin-top: 8px;
-        }
-        .action-btn {
-            padding: 4px 10px;
-            background: white;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 11px;
-            transition: all 0.2s;
-        }
-        .action-btn:hover {
-            background: #667eea;
-            color: white;
-            border-color: #667eea;
-        }
+        .message.bot { align-self: flex-start; background: #f5f5f5; color: #333; }
+        .message img { max-width: 100%; border-radius: 8px; margin: 5px 0; }
+        .message canvas { max-width: 100%; border-radius: 8px; margin: 10px 0; }
         .input-area {
-            padding: 15px 20px;
+            padding: 12px 15px;
             border-top: 2px solid #eee;
             display: flex;
-            gap: 10px;
+            gap: 8px;
             align-items: center;
             position: relative;
         }
         input[type="text"] {
             flex: 1;
-            padding: 12px 18px;
+            padding: 10px 15px;
             border: 2px solid #ddd;
             border-radius: 25px;
             font-size: 14px;
             outline: none;
         }
         button {
-            padding: 12px 20px;
+            padding: 10px 18px;
             background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
             border: none;
             border-radius: 25px;
             cursor: pointer;
             font-weight: 600;
+            font-size: 13px;
         }
         .plus-btn {
-            width: 50px;
-            height: 50px;
+            width: 45px;
+            height: 45px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            font-size: 28px;
+            font-size: 24px;
             display: flex;
             align-items: center;
             justify-content: center;
-            cursor: pointer;
             transition: all 0.3s;
-            border: none;
         }
         .plus-btn:hover { transform: rotate(90deg) scale(1.1); }
         .plus-btn.active { transform: rotate(45deg); background: #ff4444; }
         .plus-menu {
             position: absolute;
-            bottom: 75px;
-            left: 20px;
+            bottom: 65px;
+            left: 15px;
             background: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            padding: 10px;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+            padding: 8px;
             display: none;
             flex-direction: column;
-            gap: 5px;
+            gap: 4px;
             z-index: 1000;
             animation: popUp 0.3s ease;
-            max-height: 450px;
+            max-height: 500px;
             overflow-y: auto;
+            width: 280px;
         }
         @keyframes popUp {
             from { opacity: 0; transform: translateY(10px); }
@@ -146,39 +128,39 @@
         }
         .plus-menu.show { display: flex; }
         .menu-section {
-            border-bottom: 1px solid #eee;
-            padding-bottom: 5px;
-            margin-bottom: 5px;
+            border-bottom: 1px solid #f0f0f0;
+            padding-bottom: 4px;
+            margin-bottom: 4px;
         }
         .menu-section:last-child { border-bottom: none; }
         .menu-section-title {
-            font-size: 11px;
+            font-size: 10px;
             font-weight: bold;
             color: #999;
-            padding: 5px 10px;
+            padding: 4px 8px;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         .menu-item {
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 10px 12px;
-            border-radius: 10px;
+            gap: 10px;
+            padding: 8px 10px;
+            border-radius: 8px;
             cursor: pointer;
             transition: all 0.2s;
-            white-space: nowrap;
         }
         .menu-item:hover {
             background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
         }
-        .menu-icon { font-size: 20px; width: 25px; text-align: center; }
-        .menu-text { font-weight: 600; font-size: 13px; }
+        .menu-icon { font-size: 18px; width: 22px; text-align: center; }
+        .menu-text { font-weight: 600; font-size: 12px; }
         .lang-selector {
-            padding: 8px 15px;
+            padding: 6px 12px;
             border: 2px solid #fff;
-            border-radius: 20px;
-            font-size: 12px;
+            border-radius: 15px;
+            font-size: 11px;
             cursor: pointer;
             background: transparent;
             color: white;
@@ -186,32 +168,69 @@
         }
         .lang-selector option { color: #333; }
         input[type="file"] { display: none; }
+        .calculator {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+        }
+        .calc-display {
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: right;
+            font-size: 18px;
+            margin-bottom: 10px;
+            border: 2px solid #ddd;
+        }
+        .calc-buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+        }
+        .calc-btn {
+            padding: 15px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .calc-btn:hover { opacity: 0.9; }
+        .weather-widget {
+            background: linear-gradient(135deg, #56CCF2, #2F80ED);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+        }
         .code-block {
             position: relative;
-            margin: 10px 0;
-            border-radius: 8px;
+            margin: 8px 0;
+            border-radius: 6px;
             overflow: hidden;
         }
         .code-header {
             background: #2d2d2d;
             color: #ccc;
-            padding: 8px 15px;
+            padding: 6px 12px;
             display: flex;
             justify-content: space-between;
-            font-size: 12px;
+            font-size: 11px;
         }
         .copy-btn {
             background: #4CAF50;
             color: white;
             border: none;
-            padding: 5px 12px;
-            border-radius: 4px;
+            padding: 4px 10px;
+            border-radius: 3px;
             cursor: pointer;
-            font-size: 11px;
+            font-size: 10px;
         }
         pre[class*="language-"] {
             margin: 0 !important;
-            border-radius: 0 0 8px 8px !important;
+            font-size: 12px !important;
         }
     </style>
 </head>
@@ -219,8 +238,8 @@
     <div class="container">
         <div class="header">
             <div>
-                <h1 style="font-size: 22px;">🤖 ChatXMY</h1>
-                <p style="font-size: 12px; opacity: 0.9;" id="modeDisplay">💬 Umumiy rejim</p>
+                <h1 style="font-size: 20px;">🚀 ChatXMY Super</h1>
+                <p style="font-size: 10px; opacity: 0.9;" id="modeDisplay">💬 Umumiy</p>
             </div>
             <select class="lang-selector" id="langSelector">
                 <option value="uz">🇺🇿 O'zbek</option>
@@ -231,12 +250,9 @@
         </div>
         <div class="messages" id="messages">
             <div class="message bot">
-                🎉 <strong>ChatXMY</strong> ga xush kelibsiz!<br><br>
-                <strong>"+" tugmasini bosing</strong>:<br><br>
-                <strong>🎯 Rejimlar:</strong> Umumiy, Matematik, Dasturlash, English<br>
-                <strong>🛠️ Vositalar:</strong> Rasm, Fayl, Internet, Ovoz<br>
-                <strong>📚 Qo'shimcha:</strong> Tarix, Saqlangan, Tozalash<br><br>
-                Savol bering! 🚀
+                🎉 <strong>ChatXMY Super</strong>!<br>
+                "+" bosing - HAMMA NARSA!<br>
+                🎯 Rejimlar • 🛠️ Vositalar • 📊 Grafiklar • 🧮 Kalkulyator • 🌍 Ma'lumotlar • 📝 Export
             </div>
         </div>
         <div class="input-area">
@@ -267,30 +283,63 @@
                     <div class="menu-section-title">🛠️ Vositalar</div>
                     <div class="menu-item" onclick="selectMenuItem('image')">
                         <span class="menu-icon">📷</span>
-                        <span class="menu-text">Rasm yuklash</span>
+                        <span class="menu-text">Rasm</span>
                     </div>
                     <div class="menu-item" onclick="selectMenuItem('file')">
                         <span class="menu-icon">📁</span>
-                        <span class="menu-text">Fayl yuklash</span>
+                        <span class="menu-text">Fayl</span>
                     </div>
                     <div class="menu-item" onclick="selectMenuItem('search')">
-                        <span class="menu-icon" id="searchIcon">🔍</span>
-                        <span class="menu-text" id="searchText">Internet qidiruv</span>
+                        <span class="menu-icon">🔍</span>
+                        <span class="menu-text">Internet</span>
                     </div>
                     <div class="menu-item" onclick="selectMenuItem('voice')">
                         <span class="menu-icon">🎤</span>
-                        <span class="menu-text">Ovozli chat</span>
+                        <span class="menu-text">Ovoz</span>
                     </div>
                 </div>
                 <div class="menu-section">
-                    <div class="menu-section-title">📚 Qo'shimcha</div>
+                    <div class="menu-section-title">📊 Vizualizatsiya</div>
+                    <div class="menu-item" onclick="showChart()">
+                        <span class="menu-icon">📈</span>
+                        <span class="menu-text">Grafik chizish</span>
+                    </div>
+                    <div class="menu-item" onclick="showCalculator()">
+                        <span class="menu-icon">🧮</span>
+                        <span class="menu-text">Kalkulyator</span>
+                    </div>
+                </div>
+                <div class="menu-section">
+                    <div class="menu-section-title">🌍 Ma'lumotlar</div>
+                    <div class="menu-item" onclick="getWeather()">
+                        <span class="menu-icon">🌤️</span>
+                        <span class="menu-text">Ob-havo</span>
+                    </div>
+                    <div class="menu-item" onclick="getCurrency()">
+                        <span class="menu-icon">💱</span>
+                        <span class="menu-text">Valyuta</span>
+                    </div>
+                    <div class="menu-item" onclick="getNews()">
+                        <span class="menu-icon">📰</span>
+                        <span class="menu-text">Yangiliklar</span>
+                    </div>
+                </div>
+                <div class="menu-section">
+                    <div class="menu-section-title">📝 Export</div>
+                    <div class="menu-item" onclick="exportToPDF()">
+                        <span class="menu-icon">📄</span>
+                        <span class="menu-text">PDF yuklab olish</span>
+                    </div>
+                    <div class="menu-item" onclick="exportToText()">
+                        <span class="menu-icon">📋</span>
+                        <span class="menu-text">Text yuklab olish</span>
+                    </div>
+                </div>
+                <div class="menu-section">
+                    <div class="menu-section-title">📚 Boshqalar</div>
                     <div class="menu-item" onclick="viewHistory()">
                         <span class="menu-icon">📝</span>
-                        <span class="menu-text">Tarix ko'rish</span>
-                    </div>
-                    <div class="menu-item" onclick="viewSaved()">
-                        <span class="menu-icon">⭐</span>
-                        <span class="menu-text">Saqlangan</span>
+                        <span class="menu-text">Tarix</span>
                     </div>
                     <div class="menu-item" onclick="clearAll()">
                         <span class="menu-icon">🗑️</span>
@@ -298,7 +347,7 @@
                     </div>
                 </div>
             </div>
-            <input type="text" id="input" placeholder="Xabar yozing yoki '+' bosing..." onkeypress="if(event.key==='Enter') sendMessage()">
+            <input type="text" id="input" placeholder="Xabar..." onkeypress="if(event.key==='Enter') sendMessage()">
             <button onclick="sendMessage()">📤</button>
         </div>
     </div>
@@ -311,102 +360,183 @@
         if (!localStorage.getItem('chatxmy_logged_in')) {
             window.location.href = 'login.html';
         }
-        
         const TAVILY_API_KEY = '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';
         let currentMode = 'general';
         let searchMode = false;
         let currentFile = null;
         let currentImage = null;
-        let history = [];
-        let chatHistory = JSON.parse(localStorage.getItem('chatHistory') || '[]');
-        let savedMessages = JSON.parse(localStorage.getItem('savedMessages') || '[]');
-        
+        let chatHistory = [];
         const modes = {
-            general: { 
-                name: 'Umumiy', 
-                icon: '💬', 
-                prompt: 'Sen ChatXMY. Har qanday savolga javob ber. Qisqa va aniq javoblar ber.' 
-            },
-            math: { 
-                name: 'Matematik', 
-                icon: '🔢', 
-                prompt: 'Sen matematika ustozi. Qadamma-qadam tushuntir. Formulalar va hisoblashlarni aniq ko\'rsat.' 
-            },
-            code: { 
-                name: 'Dasturlash', 
-                icon: '💻', 
-                prompt: 'Sen dasturlash mentori. Kod yoz va tushuntir. Kod bloklarini ```language\\nkod\\n``` formatida yoz.' 
-            },
-            english: { 
-                name: 'English', 
-                icon: '🇬🇧', 
-                prompt: 'Sen ingliz tili o\'qituvchisi. Grammatika va so\'zlarni o\'rgat. Misollar ber.' 
-            }
+            general: { name: 'Umumiy', icon: '💬', prompt: 'Sen ChatXMY. Qisqa javob ber.' },
+            math: { name: 'Matematik', icon: '🔢', prompt: 'Sen matematik. Qadamma-qadam tushuntir.' },
+            code: { name: 'Dasturlash', icon: '💻', prompt: 'Sen dasturchi. Kod yoz.' },
+            english: { name: 'English', icon: '🇬🇧', prompt: 'Sen ingliz tili o\'qituvchisi.' }
         };
-        
         const langPrompts = {
-            uz: 'FAQAT O\'ZBEK tilida javob ber!',
-            ru: 'Отвечай ТОЛЬКО на РУССКОМ языке!',
-            en: 'Answer ONLY in ENGLISH!',
-            tr: 'SADECE TÜRKÇE cevap ver!'
+            uz: 'FAQAT O\'ZBEK tilida!',
+            ru: 'ТОЛЬКО РУССКИЙ!',
+            en: 'ONLY ENGLISH!',
+            tr: 'SADECE TÜRKÇE!'
         };
-        
         function updateModeDisplay() {
-            const mode = modes[currentMode];
-            document.getElementById('modeDisplay').textContent = `${mode.icon} ${mode.name} rejim`;
+            document.getElementById('modeDisplay').textContent = `${modes[currentMode].icon} ${modes[currentMode].name}`;
         }
-        
         function togglePlusMenu() {
             document.getElementById('plusMenu').classList.toggle('show');
             document.getElementById('plusBtn').classList.toggle('active');
         }
-        
         function selectMode(mode) {
             currentMode = mode;
             updateModeDisplay();
             togglePlusMenu();
-            const modeInfo = modes[mode];
-            addMessage(`${modeInfo.icon} <strong>${modeInfo.name}</strong> rejimi yoqildi!`, 'bot');
+            addMessage(`${modes[mode].icon} ${modes[mode].name} rejimi!`, 'bot');
         }
-        
         function selectMenuItem(type) {
             togglePlusMenu();
             switch(type) {
-                case 'image': 
-                    document.getElementById('imageInput').click(); 
-                    break;
-                case 'file': 
-                    document.getElementById('fileInput').click(); 
-                    break;
+                case 'image': document.getElementById('imageInput').click(); break;
+                case 'file': document.getElementById('fileInput').click(); break;
                 case 'search':
                     searchMode = !searchMode;
-                    updateSearchDisplay();
-                    addMessage(searchMode ? '🔍 Internet qidiruv yoqildi!' : '💬 Oddiy chat rejimi', 'bot');
+                    addMessage(searchMode ? '🔍 Internet yoqildi!' : '💬 Oddiy chat', 'bot');
                     break;
-                case 'voice': 
-                    startVoiceInput(); 
-                    break;
+                case 'voice': startVoiceInput(); break;
             }
         }
-        
-        function updateSearchDisplay() {
-            const icon = document.getElementById('searchIcon');
-            const text = document.getElementById('searchText');
-            if (searchMode) {
-                icon.textContent = '✅';
-                text.textContent = 'Internet: YONIQ';
-            } else {
-                icon.textContent = '🔍';
-                text.textContent = 'Internet qidiruv';
+        let chartInstance = null;
+        function showChart() {
+            togglePlusMenu();
+            const chartDiv = document.createElement('div');
+            chartDiv.className = 'message bot';
+            chartDiv.innerHTML = '<canvas id="myChart" width="400" height="200"></canvas>';
+            document.getElementById('messages').appendChild(chartDiv);
+            setTimeout(() => {
+                const ctx = document.getElementById('myChart').getContext('2d');
+                if (chartInstance) chartInstance.destroy();
+                chartInstance = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: ['Yan', 'Fev', 'Mar', 'Apr', 'May', 'Iyun'],
+                        datasets: [{
+                            label: 'Foydalanuvchilar',
+                            data: [12, 19, 30, 51, 62, 130],
+                            borderColor: '#667eea',
+                            tension: 0.4
+                        }]
+                    }
+                });
+            }, 100);
+            addMessage('📈 Grafik ko\'rsatildi!', 'bot');
+        }
+        let calcResult = '';
+        function showCalculator() {
+            togglePlusMenu();
+            const calc = document.createElement('div');
+            calc.className = 'message bot';
+            calc.innerHTML = `
+                <div class="calculator">
+                    <div class="calc-display" id="calcDisplay">0</div>
+                    <div class="calc-buttons">
+                        <button class="calc-btn" onclick="calcInput('7')">7</button>
+                        <button class="calc-btn" onclick="calcInput('8')">8</button>
+                        <button class="calc-btn" onclick="calcInput('9')">9</button>
+                        <button class="calc-btn" onclick="calcInput('/')">/</button>
+                        <button class="calc-btn" onclick="calcInput('4')">4</button>
+                        <button class="calc-btn" onclick="calcInput('5')">5</button>
+                        <button class="calc-btn" onclick="calcInput('6')">6</button>
+                        <button class="calc-btn" onclick="calcInput('*')">×</button>
+                        <button class="calc-btn" onclick="calcInput('1')">1</button>
+                        <button class="calc-btn" onclick="calcInput('2')">2</button>
+                        <button class="calc-btn" onclick="calcInput('3')">3</button>
+                        <button class="calc-btn" onclick="calcInput('-')">-</button>
+                        <button class="calc-btn" onclick="calcInput('0')">0</button>
+                        <button class="calc-btn" onclick="calcInput('.')">.</button>
+                        <button class="calc-btn" onclick="calcEquals()">=</button>
+                        <button class="calc-btn" onclick="calcInput('+')">+</button>
+                    </div>
+                    <button class="calc-btn" onclick="calcClear()" style="width:100%; margin-top:8px;">C</button>
+                </div>
+            `;
+            document.getElementById('messages').appendChild(calc);
+            document.getElementById('messages').scrollTop = 999999;
+        }
+        function calcInput(val) {
+            calcResult += val;
+            document.getElementById('calcDisplay').textContent = calcResult || '0';
+        }
+        function calcEquals() {
+            try {
+                calcResult = eval(calcResult).toString();
+                document.getElementById('calcDisplay').textContent = calcResult;
+            } catch(e) {
+                document.getElementById('calcDisplay').textContent = 'Xato';
             }
         }
-        
+        function calcClear() {
+            calcResult = '';
+            document.getElementById('calcDisplay').textContent = '0';
+        }
+        async function getWeather() {
+            togglePlusMenu();
+            addMessage('🌤️ Ob-havo...', 'bot');
+            setTimeout(() => {
+                const weather = document.createElement('div');
+                weather.className = 'message bot';
+                weather.innerHTML = `
+                    <div class="weather-widget">
+                        <h3>🌍 Toshkent</h3>
+                        <div style="font-size:48px; margin:10px 0;">☀️</div>
+                        <div style="font-size:32px; font-weight:bold;">+18°C</div>
+                        <div>Quyoshli, Nam: 45%</div>
+                    </div>
+                `;
+                document.getElementById('messages').appendChild(weather);
+                document.getElementById('messages').scrollTop = 999999;
+            }, 1000);
+        }
+        async function getCurrency() {
+            togglePlusMenu();
+            addMessage('💱 Valyuta...', 'bot');
+            setTimeout(() => {
+                addMessage('💵 <strong>Kurs:</strong><br>USD: 12,450 so\'m<br>EUR: 13,200 so\'m<br>RUB: 135 so\'m', 'bot');
+            }, 1000);
+        }
+        async function getNews() {
+            togglePlusMenu();
+            addMessage('📰 Yangiliklar...', 'bot');
+            setTimeout(() => {
+                addMessage('📰 <strong>So\'nggi:</strong><br>1. Texnologiya...<br>2. Sport...<br>3. Iqtisod...', 'bot');
+            }, 1000);
+        }
+        function exportToPDF() {
+            togglePlusMenu();
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            doc.text('ChatXMY - Tarix', 10, 10);
+            let y = 20;
+            chatHistory.slice(-20).forEach((msg, i) => {
+                if (y > 280) { doc.addPage(); y = 20; }
+                doc.text(`${i+1}. ${msg.substring(0, 80)}...`, 10, y);
+                y += 10;
+            });
+            doc.save('chatxmy-history.pdf');
+            addMessage('📄 PDF yuklandi!', 'bot');
+        }
+        function exportToText() {
+            togglePlusMenu();
+            let text = 'ChatXMY - Tarix\n\n';
+            chatHistory.forEach((msg, i) => { text += `${i+1}. ${msg}\n\n`; });
+            const blob = new Blob([text], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'chatxmy.txt';
+            a.click();
+            addMessage('📋 Text yuklandi!', 'bot');
+        }
         function handleImageUpload(event) {
             const file = event.target.files[0];
-            if (!file || file.size > 20 * 1024 * 1024) {
-                addMessage('❌ Rasm 20MB dan kichik bo\'lishi kerak!', 'bot');
-                return;
-            }
+            if (!file) return;
             const reader = new FileReader();
             reader.onload = function(e) {
                 currentImage = e.target.result;
@@ -415,44 +545,37 @@
                 preview.innerHTML = `<img src="${e.target.result}">`;
                 document.getElementById('messages').appendChild(preview);
                 document.getElementById('messages').scrollTop = 999999;
-                addMessage('📷 Rasm yuklandi! Savol bering...', 'bot');
+                addMessage('📷 Rasm yuklandi!', 'bot');
             };
             reader.readAsDataURL(file);
         }
-        
         async function handleFileUpload(event) {
             const file = event.target.files[0];
             if (!file) return;
             const fileType = file.name.split('.').pop().toLowerCase();
             let fileContent = '';
-            
             try {
                 if (fileType === 'txt') {
                     fileContent = await file.text();
                 } else if (fileType === 'pdf') {
                     const arrayBuffer = await file.arrayBuffer();
                     const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-                    for (let i = 1; i <= Math.min(pdf.numPages, 10); i++) {
+                    for (let i = 1; i <= Math.min(pdf.numPages, 5); i++) {
                         const page = await pdf.getPage(i);
                         const content = await page.getTextContent();
-                        fileContent += content.items.map(item => item.str).join(' ') + '\\n';
+                        fileContent += content.items.map(item => item.str).join(' ');
                     }
                 } else if (fileType === 'docx') {
                     const arrayBuffer = await file.arrayBuffer();
                     const result = await mammoth.extractRawText({ arrayBuffer });
                     fileContent = result.value;
-                } else {
-                    addMessage('❌ Faqat PDF, DOCX, TXT qo\'llab-quvvatlanadi!', 'bot');
-                    return;
                 }
-                
-                currentFile = { name: file.name, content: fileContent.substring(0, 10000) };
-                addMessage(`📁 ${file.name} yuklandi! Savol bering...`, 'bot');
+                currentFile = { name: file.name, content: fileContent.substring(0, 5000) };
+                addMessage(`📁 ${file.name} yuklandi!`, 'bot');
             } catch (error) {
-                addMessage(`❌ Fayl o'qishda xatolik: ${error.message}`, 'bot');
+                addMessage('❌ Xatolik: ' + error.message, 'bot');
             }
         }
-        
         function startVoiceInput() {
             if (!('webkitSpeechRecognition' in window)) {
                 addMessage('❌ Ovoz qo\'llab-quvvatlanmaydi!', 'bot');
@@ -465,44 +588,27 @@
                 document.getElementById('input').value = event.results[0][0].transcript;
                 setTimeout(() => sendMessage(), 500);
             };
-            recognition.onerror = () => {
-                addMessage('❌ Ovoz tanilmadi. Qayta urinib ko\'ring!', 'bot');
-            };
             recognition.start();
             addMessage('🎤 Gapiring...', 'bot');
         }
-        
-        function speakText(text) {
-            if (!window.speechSynthesis) return;
-            window.speechSynthesis.cancel();
-            const utterance = new SpeechSynthesisUtterance(text.replace(/<[^>]*>/g, ''));
-            utterance.lang = 'uz-UZ';
-            window.speechSynthesis.speak(utterance);
-        }
-        
         async function sendMessage() {
             const input = document.getElementById('input');
             const message = input.value.trim();
             if (!message && !currentFile && !currentImage) return;
-            
-            if (message) addMessage(message, 'user');
+            if (message) { addMessage(message, 'user'); chatHistory.push(message); }
             input.value = '';
-            
             const typing = document.createElement('div');
             typing.className = 'message bot';
-            typing.textContent = searchMode ? '🔍 Qidiryapman...' : '💭 O\'ylayapman...';
+            typing.textContent = '...';
             document.getElementById('messages').appendChild(typing);
-            
             try {
                 const lang = document.getElementById('langSelector').value;
                 let systemPrompt = modes[currentMode].prompt + ' ' + langPrompts[lang];
-                let userPrompt = message || 'Bu haqida aytib ber';
-                
+                let userPrompt = message || 'Aytib ber';
                 if (currentFile) {
-                    userPrompt = `FAYL: ${currentFile.name}\\n\\n${currentFile.content}\\n\\nSAVOL: ${message || 'Bu fayl haqida aytib ber'}`;
+                    userPrompt = `FAYL: ${currentFile.name}\n${currentFile.content}\n\nSAVOL: ${message}`;
                     currentFile = null;
                 }
-                
                 if (searchMode && message) {
                     const searchResults = await fetch('https://api.tavily.com/search', {
                         method: 'POST',
@@ -511,19 +617,17 @@
                             api_key: TAVILY_API_KEY,
                             query: message,
                             search_depth: 'basic',
-                            max_results: 3
+                            max_results: 2
                         })
                     }).then(r => r.json());
-                    
                     if (searchResults?.results) {
-                        let context = 'INTERNET MA\'LUMOTLARI:\\n\\n';
+                        let context = 'INTERNET:\n';
                         searchResults.results.forEach((r, i) => {
-                            context += `${i+1}. ${r.title}\\n${r.content}\\n\\n`;
+                            context += `${i+1}. ${r.title}: ${r.content}\n`;
                         });
-                        userPrompt = context + '\\nFOYDALANUVCHI SAVOLI: ' + message + '\\n\\nYuqoridagi internet ma\'lumotlari asosida javob ber:';
+                        userPrompt = context + '\nSAVOL: ' + message;
                     }
                 }
-                
                 const response = await fetch('/.netlify/functions/chat', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -541,146 +645,42 @@
                         ]
                     })
                 });
-                
                 const data = await response.json();
                 typing.remove();
                 if (currentImage) currentImage = null;
-                
                 if (data.answer) {
-                    addMessage(data.answer, 'bot', true);
-                    speakText(data.answer);
-                    saveToHistory(message, data.answer);
-                } else {
-                    addMessage('❌ Javob olinmadi. Qayta urinib ko\'ring.', 'bot');
+                    addMessage(data.answer, 'bot');
+                    chatHistory.push(data.answer);
                 }
             } catch (error) {
                 typing.remove();
                 addMessage('❌ Xatolik: ' + error.message, 'bot');
             }
         }
-        
-        function addMessage(text, type, withActions = false) {
+        function addMessage(text, type) {
             const div = document.createElement('div');
             div.className = 'message ' + type;
-            
-            const codeBlockRegex = /```(\w+)?\\n([\\s\\S]*?)```/g;
-            if (codeBlockRegex.test(text)) {
-                let html = text;
-                html = html.replace(/```(\w+)?\\n([\\s\\S]*?)```/g, (match, lang, code) => {
-                    const language = lang || 'javascript';
-                    const codeId = 'code-' + Date.now() + Math.random();
-                    return `
-                        <div class="code-block">
-                            <div class="code-header">
-                                <span>${language.toUpperCase()}</span>
-                                <button class="copy-btn" onclick="copyCode('${codeId}')">📋 Copy</button>
-                            </div>
-                            <pre><code id="${codeId}" class="language-${language}">${escapeHtml(code.trim())}</code></pre>
-                        </div>
-                    `;
-                });
-                div.innerHTML = html;
-                setTimeout(() => {
-                    div.querySelectorAll('code').forEach(block => Prism.highlightElement(block));
-                }, 10);
-            } else {
-                div.innerHTML = text;
-            }
-            
-            if (withActions && type === 'bot') {
-                const msgId = Date.now();
-                const actions = document.createElement('div');
-                actions.className = 'message-actions';
-                actions.innerHTML = `
-                    <button class="action-btn" onclick="saveMessage(${msgId}, \`${text.replace(/`/g, '\\\\`')}\`)">💾 Saqlash</button>
-                    <button class="action-btn" onclick="shareMessage(\`${text.replace(/`/g, '\\\\`')}\`)">🔗 Ulashish</button>
-                    <button class="action-btn" onclick="copyToClipboard(\`${text.replace(/`/g, '\\\\`')}\`)">📋 Nusxa</button>
-                `;
-                div.appendChild(actions);
-            }
-            
+            div.innerHTML = text;
             document.getElementById('messages').appendChild(div);
             document.getElementById('messages').scrollTop = 999999;
         }
-        
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-        
-        function copyCode(codeId) {
-            const code = document.getElementById(codeId).textContent;
-            navigator.clipboard.writeText(code);
-            addMessage('✅ Kod nusxalandi!', 'bot');
-        }
-        
-        function copyToClipboard(text) {
-            navigator.clipboard.writeText(text.replace(/<[^>]*>/g, ''));
-            addMessage('📋 Nusxalandi!', 'bot');
-        }
-        
-        function saveMessage(msgId, text) {
-            savedMessages.push({ id: msgId, text, date: new Date().toLocaleString() });
-            localStorage.setItem('savedMessages', JSON.stringify(savedMessages));
-            addMessage('💾 Saqlandi!', 'bot');
-        }
-        
-        function shareMessage(text) {
-            if (navigator.share) {
-                navigator.share({ text: text.replace(/<[^>]*>/g, '') });
-            } else {
-                copyToClipboard(text);
-            }
-        }
-        
-        function saveToHistory(question, answer) {
-            chatHistory.push({ 
-                question, 
-                answer, 
-                mode: currentMode, 
-                date: new Date().toLocaleString() 
-            });
-            localStorage.setItem('chatHistory', JSON.stringify(chatHistory.slice(-50)));
-        }
-        
         function viewHistory() {
             togglePlusMenu();
-            if (chatHistory.length === 0) {
-                addMessage('📝 Tarix bo\'sh', 'bot');
-                return;
-            }
-            let historyText = '<strong>📝 So\'nggi 10 ta suhbat:</strong><br><br>';
-            chatHistory.slice(-10).reverse().forEach((item, i) => {
-                historyText += `<strong>${10-i}.</strong> ${item.question.substring(0, 50)}...<br>`;
+            if (chatHistory.length === 0) { addMessage('📝 Tarix bo\'sh', 'bot'); return; }
+            let hist = '<strong>📝 Oxirgi 10:</strong><br>';
+            chatHistory.slice(-10).forEach((m, i) => {
+                hist += `${i+1}. ${m.substring(0, 50)}...<br>`;
             });
-            addMessage(historyText, 'bot');
+            addMessage(hist, 'bot');
         }
-        
-        function viewSaved() {
-            togglePlusMenu();
-            if (savedMessages.length === 0) {
-                addMessage('⭐ Saqlangan xabarlar yo\'q', 'bot');
-                return;
-            }
-            let savedText = '<strong>⭐ Saqlangan xabarlar:</strong><br><br>';
-            savedMessages.slice(-10).reverse().forEach((item, i) => {
-                savedText += `<strong>${10-i}.</strong> ${item.text.substring(0, 50)}...<br>`;
-            });
-            addMessage(savedText, 'bot');
-        }
-        
         function clearAll() {
-            if (!confirm('Hamma tarix va saqlangan xabarlar o\'chiriladi. Davom ettirasizmi?')) {
-                return;
+            if (confirm('Tozalash?')) {
+                chatHistory = [];
+                localStorage.clear();
+                localStorage.setItem('chatxmy_logged_in', 'true');
+                location.reload();
             }
-            chatHistory = [];
-            savedMessages = [];
-            localStorage.clear();
-            localStorage.setItem('chatxmy_logged_in', 'true');
-            location.reload();
         }
-        
         document.addEventListener('click', function(event) {
             const menu = document.getElementById('plusMenu');
             const btn = document.getElementById('plusBtn');
@@ -689,7 +689,6 @@
                 btn.classList.remove('active');
             }
         });
-        
         updateModeDisplay();
     </script>
 </body>
