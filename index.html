@@ -248,6 +248,10 @@
                         <span class="menu-icon">📊</span>
                         <span class="menu-text">Excel</span>
                     </div>
+                    <div class="menu-item" onclick="openOffice('powerpoint')">
+                        <span class="menu-icon">📑</span>
+                        <span class="menu-text">PowerPoint</span>
+                    </div>
                     <div class="menu-item" onclick="openOffice('pdf')">
                         <span class="menu-icon">📕</span>
                         <span class="menu-text">PDF</span>
@@ -335,6 +339,21 @@
                     <button class="modal-btn" onclick="createExcel('grades')">📚 Baholar</button>
                     <button class="modal-btn" onclick="closeOffice()" style="background:#999">❌ Yopish</button>
                 `;
+            } else if (type === 'powerpoint') {
+                content.innerHTML = `
+                    <div class="modal-header">📑 PowerPoint Taqdimot</div>
+                    <input type="text" class="modal-input" id="pptTitle" placeholder="Taqdimot nomi">
+                    <input type="number" class="modal-input" id="pptSlides" placeholder="Slaydlar soni (1-20)" value="5" min="1" max="20">
+                    <select class="modal-input" id="pptTheme">
+                        <option value="purple">🟣 Binafsha</option>
+                        <option value="blue">🔵 Moviy</option>
+                        <option value="green">🟢 Yashil</option>
+                        <option value="red">🔴 Qizil</option>
+                        <option value="orange">🟠 To'q sariq</option>
+                    </select>
+                    <button class="modal-btn" onclick="createPowerPoint()">📑 PowerPoint Yaratish</button>
+                    <button class="modal-btn" onclick="closeOffice()" style="background:#999">❌ Yopish</button>
+                `;
             } else if (type === 'pdf') {
                 content.innerHTML = `
                     <div class="modal-header">📕 PDF Yaratish</div>
@@ -420,6 +439,66 @@
             }
             closeOffice();
             addMessage('✅ PDF yaratildi!', 'bot');
+        }
+
+        function createPowerPoint() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('landscape');
+            const title = document.getElementById('pptTitle').value || 'Taqdimot';
+            const slides = parseInt(document.getElementById('pptSlides').value) || 5;
+            const theme = document.getElementById('pptTheme').value;
+            
+            // Theme colors
+            const themes = {
+                purple: { r: 102, g: 126, b: 234 },
+                blue: { r: 33, g: 150, b: 243 },
+                green: { r: 76, g: 175, b: 80 },
+                red: { r: 244, g: 67, b: 54 },
+                orange: { r: 255, g: 152, b: 0 }
+            };
+            
+            const color = themes[theme];
+            
+            for (let i = 0; i < slides; i++) {
+                if (i > 0) doc.addPage();
+                
+                // Background
+                doc.setFillColor(color.r, color.g, color.b);
+                doc.rect(0, 0, 297, 210, 'F');
+                
+                // Title slide
+                if (i === 0) {
+                    doc.setTextColor(255, 255, 255);
+                    doc.setFontSize(40);
+                    doc.text(title, 148, 80, { align: 'center' });
+                    doc.setFontSize(16);
+                    doc.text('Yaratuvchi: Xo\'jayev Muhammad Yusuf', 148, 110, { align: 'center' });
+                    doc.text(new Date().toLocaleDateString(), 148, 125, { align: 'center' });
+                } else {
+                    // Content slides
+                    doc.setFillColor(255, 255, 255);
+                    doc.rect(20, 20, 257, 170, 'F');
+                    
+                    doc.setTextColor(color.r, color.g, color.b);
+                    doc.setFontSize(28);
+                    doc.text('Slayd ' + (i + 1), 148, 50, { align: 'center' });
+                    
+                    doc.setFontSize(14);
+                    doc.setTextColor(0, 0, 0);
+                    doc.text('• Asosiy nuqta 1', 40, 90);
+                    doc.text('• Asosiy nuqta 2', 40, 110);
+                    doc.text('• Asosiy nuqta 3', 40, 130);
+                    
+                    // Footer
+                    doc.setFontSize(10);
+                    doc.setTextColor(150, 150, 150);
+                    doc.text(title, 148, 195, { align: 'center' });
+                }
+            }
+            
+            doc.save(title + '.pdf');
+            closeOffice();
+            addMessage('✅ PowerPoint (PDF) yaratildi!', 'bot');
         }
 
         function downloadBlob(blob, filename) {
