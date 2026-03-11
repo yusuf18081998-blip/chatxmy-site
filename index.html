@@ -3,11 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ChatXMY Mega</title>
+    <title>ChatXMY AI Ultimate</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -47,8 +45,8 @@
             gap: 10px;
         }
         .message {
-            max-width: 80%;
-            padding: 10px 14px;
+            max-width: 85%;
+            padding: 12px 16px;
             border-radius: 14px;
             word-wrap: break-word;
             animation: slideIn 0.3s ease;
@@ -62,25 +60,59 @@
             background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
         }
-        .message.bot { align-self: flex-start; background: #f5f5f5; color: #333; }
+        .message.bot { 
+            align-self: flex-start; 
+            background: #f5f5f5; 
+            color: #333; 
+        }
+        .doc-preview {
+            background: white;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+        .doc-preview h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        .slide-preview {
+            background: #f9f9f9;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+            border-left: 3px solid #667eea;
+        }
+        .download-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 8px;
+            text-decoration: none;
+            margin: 5px;
+            cursor: pointer;
+            border: none;
+            font-weight: 600;
+        }
+        .download-btn:hover { opacity: 0.9; }
         .input-area {
             padding: 12px 15px;
             border-top: 2px solid #eee;
             display: flex;
             gap: 8px;
             align-items: center;
-            position: relative;
         }
         input[type="text"] {
             flex: 1;
-            padding: 10px 15px;
+            padding: 12px 15px;
             border: 2px solid #ddd;
             border-radius: 25px;
             font-size: 14px;
             outline: none;
         }
         button {
-            padding: 10px 18px;
+            padding: 12px 20px;
             background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
             border: none;
@@ -89,103 +121,20 @@
             font-weight: 600;
             font-size: 13px;
         }
-        .plus-btn {
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            font-size: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s;
+        .typing {
+            display: inline-block;
+            padding: 10px 15px;
+            background: #f0f0f0;
+            border-radius: 10px;
         }
-        .plus-btn:hover { transform: rotate(90deg) scale(1.1); }
-        .plus-btn.active { transform: rotate(45deg); background: #ff4444; }
-        .plus-menu {
-            position: absolute;
-            bottom: 65px;
-            left: 15px;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.2);
-            padding: 8px;
-            display: none;
-            flex-direction: column;
-            gap: 4px;
-            z-index: 1000;
-            max-height: 500px;
-            overflow-y: auto;
-            width: 280px;
+        .typing::after {
+            content: '...';
+            animation: dots 1.5s steps(4, end) infinite;
         }
-        .plus-menu.show { display: flex; }
-        .menu-section {
-            border-bottom: 1px solid #f0f0f0;
-            padding-bottom: 4px;
-            margin-bottom: 4px;
-        }
-        .menu-section:last-child { border-bottom: none; }
-        .menu-section-title {
-            font-size: 10px;
-            font-weight: bold;
-            color: #999;
-            padding: 4px 8px;
-            text-transform: uppercase;
-        }
-        .menu-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 8px 10px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .menu-item:hover {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-        }
-        .menu-icon { font-size: 18px; width: 22px; text-align: center; }
-        .menu-text { font-weight: 600; font-size: 12px; }
-        input[type="file"] { display: none; }
-        .office-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 2000;
-            justify-content: center;
-            align-items: center;
-        }
-        .office-modal.show { display: flex; }
-        .modal-content {
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            max-width: 500px;
-            width: 90%;
-            max-height: 80vh;
-            overflow-y: auto;
-        }
-        .modal-header {
-            font-size: 20px;
-            font-weight: bold;
-            margin-bottom: 20px;
-            color: #667eea;
-        }
-        .modal-input {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-        }
-        .modal-btn {
-            width: 100%;
-            padding: 12px;
-            margin: 5px 0;
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60%, 100% { content: '...'; }
         }
     </style>
 </head>
@@ -193,347 +142,31 @@
     <div class="container">
         <div class="header">
             <div>
-                <h1 style="font-size: 20px;">🚀 ChatXMY Mega</h1>
-                <p style="font-size: 10px; opacity: 0.9;" id="modeDisplay">💬 Umumiy</p>
+                <h1 style="font-size: 20px;">🚀 ChatXMY AI Ultimate</h1>
+                <p style="font-size: 10px; opacity: 0.9;">AI Chat + Office Generator</p>
             </div>
         </div>
         <div class="messages" id="messages">
             <div class="message bot">
-                🎉 <strong>ChatXMY Mega</strong>!<br>
-                AI + Internet + Office + Ko'proq!
+                🎉 <strong>ChatXMY AI Ultimate!</strong><br><br>
+                Nima yaratmoqchisiz?<br><br>
+                <strong>Misollar:</strong><br>
+                📑 "Python haqida 5 ta slayd yarat"<br>
+                📄 "Men haqimda rezyume yoz"<br>
+                📊 "Oy davomida xarajat jadvali"<br>
+                📕 "Yutuq sertifikati yarat"<br><br>
+                Savol bering! 💬
             </div>
         </div>
         <div class="input-area">
-            <input type="file" id="imageInput" accept="image/*" onchange="handleImageUpload(event)">
-            <input type="file" id="fileInput" accept=".pdf,.docx,.txt" onchange="handleFileUpload(event)">
-            <button class="plus-btn" id="plusBtn" onclick="togglePlusMenu()">+</button>
-            <div class="plus-menu" id="plusMenu">
-                <div class="menu-section">
-                    <div class="menu-section-title">🎯 Rejimlar</div>
-                    <div class="menu-item" onclick="selectMode('general')">
-                        <span class="menu-icon">💬</span>
-                        <span class="menu-text">Umumiy</span>
-                    </div>
-                    <div class="menu-item" onclick="selectMode('math')">
-                        <span class="menu-icon">🔢</span>
-                        <span class="menu-text">Matematik</span>
-                    </div>
-                    <div class="menu-item" onclick="selectMode('code')">
-                        <span class="menu-icon">💻</span>
-                        <span class="menu-text">Dasturlash</span>
-                    </div>
-                </div>
-                <div class="menu-section">
-                    <div class="menu-section-title">🛠️ Vositalar</div>
-                    <div class="menu-item" onclick="selectMenuItem('image')">
-                        <span class="menu-icon">📷</span>
-                        <span class="menu-text">Rasm</span>
-                    </div>
-                    <div class="menu-item" onclick="selectMenuItem('file')">
-                        <span class="menu-icon">📁</span>
-                        <span class="menu-text">Fayl</span>
-                    </div>
-                    <div class="menu-item" onclick="selectMenuItem('search')">
-                        <span class="menu-icon">🔍</span>
-                        <span class="menu-text">Internet</span>
-                    </div>
-                </div>
-                <div class="menu-section">
-                    <div class="menu-section-title">📚 Office</div>
-                    <div class="menu-item" onclick="openOffice('word')">
-                        <span class="menu-icon">📄</span>
-                        <span class="menu-text">Word</span>
-                    </div>
-                    <div class="menu-item" onclick="openOffice('excel')">
-                        <span class="menu-icon">📊</span>
-                        <span class="menu-text">Excel</span>
-                    </div>
-                    <div class="menu-item" onclick="openOffice('powerpoint')">
-                        <span class="menu-icon">📑</span>
-                        <span class="menu-text">PowerPoint</span>
-                    </div>
-                    <div class="menu-item" onclick="openOffice('pdf')">
-                        <span class="menu-icon">📕</span>
-                        <span class="menu-text">PDF</span>
-                    </div>
-                </div>
-                <div class="menu-section">
-                    <div class="menu-section-title">📝 Boshqa</div>
-                    <div class="menu-item" onclick="clearAll()">
-                        <span class="menu-icon">🗑️</span>
-                        <span class="menu-text">Tozalash</span>
-                    </div>
-                </div>
-            </div>
-            <input type="text" id="input" placeholder="Xabar..." onkeypress="if(event.key==='Enter') sendMessage()">
+            <input type="text" id="input" placeholder="Masalan: Python haqida 5 ta slayd yarat..." onkeypress="if(event.key==='Enter') sendMessage()">
             <button onclick="sendMessage()">📤</button>
         </div>
     </div>
 
-    <!-- Office Modal -->
-    <div class="office-modal" id="officeModal">
-        <div class="modal-content" id="modalContent"></div>
-    </div>
-
     <script>
-        const TAVILY_API_KEY = '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';
-        let currentMode = 'general';
-        let searchMode = false;
-        let currentFile = null;
-        let currentImage = null;
-
-        const modes = {
-            general: { name: 'Umumiy', icon: '💬', prompt: 'Sen ChatXMY. Qisqa javob ber.' },
-            math: { name: 'Matematik', icon: '🔢', prompt: 'Sen matematik. Qadamma-qadam tushuntir.' },
-            code: { name: 'Dasturlash', icon: '💻', prompt: 'Sen dasturchi. Kod yoz.' }
-        };
-
-        function updateModeDisplay() {
-            document.getElementById('modeDisplay').textContent = `${modes[currentMode].icon} ${modes[currentMode].name}`;
-        }
-
-        function togglePlusMenu() {
-            document.getElementById('plusMenu').classList.toggle('show');
-            document.getElementById('plusBtn').classList.toggle('active');
-        }
-
-        function selectMode(mode) {
-            currentMode = mode;
-            updateModeDisplay();
-            togglePlusMenu();
-            addMessage(`${modes[mode].icon} ${modes[mode].name} rejimi!`, 'bot');
-        }
-
-        function selectMenuItem(type) {
-            togglePlusMenu();
-            switch(type) {
-                case 'image': document.getElementById('imageInput').click(); break;
-                case 'file': document.getElementById('fileInput').click(); break;
-                case 'search':
-                    searchMode = !searchMode;
-                    addMessage(searchMode ? '🔍 Internet yoqildi!' : '💬 Oddiy chat', 'bot');
-                    break;
-            }
-        }
-
-        // OFFICE FUNCTIONS
-        function openOffice(type) {
-            togglePlusMenu();
-            const modal = document.getElementById('officeModal');
-            const content = document.getElementById('modalContent');
-            
-            if (type === 'word') {
-                content.innerHTML = `
-                    <div class="modal-header">📄 Word Dokument</div>
-                    <input type="text" class="modal-input" id="wordTitle" placeholder="Sarlavha">
-                    <textarea class="modal-input" id="wordContent" placeholder="Matn..." style="height:150px"></textarea>
-                    <button class="modal-btn" onclick="createWord()">💾 Word Yaratish</button>
-                    <button class="modal-btn" onclick="createWordPDF()">📕 PDF sifatida</button>
-                    <button class="modal-btn" onclick="closeOffice()" style="background:#999">❌ Yopish</button>
-                `;
-            } else if (type === 'excel') {
-                content.innerHTML = `
-                    <div class="modal-header">📊 Excel Jadval</div>
-                    <button class="modal-btn" onclick="createExcel('sample')">📋 Namuna</button>
-                    <button class="modal-btn" onclick="createExcel('budget')">💰 Byudjet</button>
-                    <button class="modal-btn" onclick="createExcel('grades')">📚 Baholar</button>
-                    <button class="modal-btn" onclick="closeOffice()" style="background:#999">❌ Yopish</button>
-                `;
-            } else if (type === 'powerpoint') {
-                content.innerHTML = `
-                    <div class="modal-header">📑 PowerPoint Taqdimot</div>
-                    <input type="text" class="modal-input" id="pptTitle" placeholder="Taqdimot nomi">
-                    <input type="number" class="modal-input" id="pptSlides" placeholder="Slaydlar soni (1-20)" value="5" min="1" max="20">
-                    <select class="modal-input" id="pptTheme">
-                        <option value="purple">🟣 Binafsha</option>
-                        <option value="blue">🔵 Moviy</option>
-                        <option value="green">🟢 Yashil</option>
-                        <option value="red">🔴 Qizil</option>
-                        <option value="orange">🟠 To'q sariq</option>
-                    </select>
-                    <button class="modal-btn" onclick="createPowerPoint()">📑 PowerPoint Yaratish</button>
-                    <button class="modal-btn" onclick="closeOffice()" style="background:#999">❌ Yopish</button>
-                `;
-            } else if (type === 'pdf') {
-                content.innerHTML = `
-                    <div class="modal-header">📕 PDF Yaratish</div>
-                    <button class="modal-btn" onclick="createPDF('resume')">👤 Rezyume</button>
-                    <button class="modal-btn" onclick="createPDF('certificate')">🏆 Sertifikat</button>
-                    <button class="modal-btn" onclick="createPDF('report')">📊 Hisobot</button>
-                    <button class="modal-btn" onclick="closeOffice()" style="background:#999">❌ Yopish</button>
-                `;
-            }
-            modal.classList.add('show');
-        }
-
-        function closeOffice() {
-            document.getElementById('officeModal').classList.remove('show');
-        }
-
-        function createWord() {
-            const title = document.getElementById('wordTitle').value || 'Document';
-            const content = document.getElementById('wordContent').value || 'Matn...';
-            const html = `<html><body><h1>${title}</h1><p>${content}</p></body></html>`;
-            const blob = new Blob([html], { type: 'application/msword' });
-            downloadBlob(blob, title + '.doc');
-            closeOffice();
-            addMessage('✅ Word dokument yaratildi!', 'bot');
-        }
-
-        function createWordPDF() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            const title = document.getElementById('wordTitle').value || 'Document';
-            const content = document.getElementById('wordContent').value || 'Matn...';
-            doc.setFontSize(20);
-            doc.text(title, 20, 20);
-            doc.setFontSize(12);
-            const lines = doc.splitTextToSize(content, 170);
-            doc.text(lines, 20, 40);
-            doc.save(title + '.pdf');
-            closeOffice();
-            addMessage('✅ PDF yaratildi!', 'bot');
-        }
-
-        function createExcel(type) {
-            let data = [];
-            if (type === 'sample') {
-                data = [['Nomi', 'Narxi', 'Soni'], ['Item 1', 1000, 5], ['Item 2', 2000, 3]];
-            } else if (type === 'budget') {
-                data = [['Oy', 'Daromad', 'Xarajat'], ['Yanvar', 5000000, 3000000], ['Fevral', 5500000, 3500000]];
-            } else if (type === 'grades') {
-                data = [['Talaba', 'Matematika', 'Fizika'], ['Ali', 5, 4], ['Vali', 4, 5]];
-            }
-            const wb = XLSX.utils.book_new();
-            const ws = XLSX.utils.aoa_to_sheet(data);
-            XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
-            XLSX.writeFile(wb, type + '.xlsx');
-            closeOffice();
-            addMessage('✅ Excel yaratildi!', 'bot');
-        }
-
-        function createPDF(type) {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            
-            if (type === 'resume') {
-                doc.setFontSize(24);
-                doc.text('REZYUME', 105, 20, { align: 'center' });
-                doc.setFontSize(12);
-                doc.text('Ism: Xo\'jayev Muhammad Yusuf', 20, 40);
-                doc.text('Yosh: 13', 20, 50);
-                doc.text('Kasb: Dasturchi', 20, 60);
-                doc.save('Rezyume.pdf');
-            } else if (type === 'certificate') {
-                doc.setFontSize(28);
-                doc.text('SERTIFIKAT', 105, 60, { align: 'center' });
-                doc.setFontSize(16);
-                doc.text('Xo\'jayev Muhammad Yusuf', 105, 100, { align: 'center' });
-                doc.save('Sertifikat.pdf');
-            } else if (type === 'report') {
-                doc.setFontSize(20);
-                doc.text('HISOBOT', 105, 20, { align: 'center' });
-                doc.setFontSize(12);
-                doc.text('Sana: ' + new Date().toLocaleDateString(), 20, 40);
-                doc.save('Hisobot.pdf');
-            }
-            closeOffice();
-            addMessage('✅ PDF yaratildi!', 'bot');
-        }
-
-        function createPowerPoint() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF('landscape');
-            const title = document.getElementById('pptTitle').value || 'Taqdimot';
-            const slides = parseInt(document.getElementById('pptSlides').value) || 5;
-            const theme = document.getElementById('pptTheme').value;
-            
-            // Theme colors
-            const themes = {
-                purple: { r: 102, g: 126, b: 234 },
-                blue: { r: 33, g: 150, b: 243 },
-                green: { r: 76, g: 175, b: 80 },
-                red: { r: 244, g: 67, b: 54 },
-                orange: { r: 255, g: 152, b: 0 }
-            };
-            
-            const color = themes[theme];
-            
-            for (let i = 0; i < slides; i++) {
-                if (i > 0) doc.addPage();
-                
-                // Background
-                doc.setFillColor(color.r, color.g, color.b);
-                doc.rect(0, 0, 297, 210, 'F');
-                
-                // Title slide
-                if (i === 0) {
-                    doc.setTextColor(255, 255, 255);
-                    doc.setFontSize(40);
-                    doc.text(title, 148, 80, { align: 'center' });
-                    doc.setFontSize(16);
-                    doc.text('Yaratuvchi: Xo\'jayev Muhammad Yusuf', 148, 110, { align: 'center' });
-                    doc.text(new Date().toLocaleDateString(), 148, 125, { align: 'center' });
-                } else {
-                    // Content slides
-                    doc.setFillColor(255, 255, 255);
-                    doc.rect(20, 20, 257, 170, 'F');
-                    
-                    doc.setTextColor(color.r, color.g, color.b);
-                    doc.setFontSize(28);
-                    doc.text('Slayd ' + (i + 1), 148, 50, { align: 'center' });
-                    
-                    doc.setFontSize(14);
-                    doc.setTextColor(0, 0, 0);
-                    doc.text('• Asosiy nuqta 1', 40, 90);
-                    doc.text('• Asosiy nuqta 2', 40, 110);
-                    doc.text('• Asosiy nuqta 3', 40, 130);
-                    
-                    // Footer
-                    doc.setFontSize(10);
-                    doc.setTextColor(150, 150, 150);
-                    doc.text(title, 148, 195, { align: 'center' });
-                }
-            }
-            
-            doc.save(title + '.pdf');
-            closeOffice();
-            addMessage('✅ PowerPoint (PDF) yaratildi!', 'bot');
-        }
-
-        function downloadBlob(blob, filename) {
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = filename;
-            a.click();
-        }
-
-        function handleImageUpload(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                currentImage = e.target.result;
-                addMessage('📷 Rasm yuklandi!', 'bot');
-            };
-            reader.readAsDataURL(file);
-        }
-
-        async function handleFileUpload(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            addMessage('📁 Fayl yuklandi!', 'bot');
-        }
-
-        async function sendMessage() {
-            const input = document.getElementById('input');
-            const message = input.value.trim();
-            if (!message) return;
-            addMessage(message, 'user');
-            input.value = '';
-            addMessage('AI javob bu yerda bo\'ladi...', 'bot');
-        }
+        const GROQ_API = 'https://api.groq.com/openai/v1/chat/completions';
+        const API_KEY = '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';
 
         function addMessage(text, type) {
             const div = document.createElement('div');
@@ -541,26 +174,243 @@
             div.innerHTML = text;
             document.getElementById('messages').appendChild(div);
             document.getElementById('messages').scrollTop = 999999;
+            return div;
         }
 
-        function clearAll() {
-            if (confirm('Tozalash?')) location.reload();
+        async function sendMessage() {
+            const input = document.getElementById('input');
+            const message = input.value.trim();
+            if (!message) return;
+
+            addMessage(message, 'user');
+            input.value = '';
+
+            const typing = addMessage('<span class="typing">AI o\'ylayapti</span>', 'bot');
+
+            try {
+                // Detect document type
+                const lower = message.toLowerCase();
+                
+                if (lower.includes('slayd') || lower.includes('taqdimot') || lower.includes('powerpoint') || lower.includes('ppt')) {
+                    await handlePowerPoint(message, typing);
+                } else if (lower.includes('rezyume') || lower.includes('cv') || lower.includes('resume')) {
+                    await handleResume(message, typing);
+                } else if (lower.includes('jadval') || lower.includes('excel') || lower.includes('xls')) {
+                    await handleExcel(message, typing);
+                } else if (lower.includes('sertifikat') || lower.includes('certificate')) {
+                    await handleCertificate(message, typing);
+                } else {
+                    // Regular AI chat
+                    await handleChat(message, typing);
+                }
+            } catch (error) {
+                typing.remove();
+                addMessage('❌ Xatolik yuz berdi. Qayta urinib ko\'ring!<br><small>' + error.message + '</small>', 'bot');
+            }
         }
 
-        document.addEventListener('click', function(event) {
-            const menu = document.getElementById('plusMenu');
-            const btn = document.getElementById('plusBtn');
-            const modal = document.getElementById('officeModal');
-            if (!menu.contains(event.target) && event.target !== btn) {
-                menu.classList.remove('show');
-                btn.classList.remove('active');
-            }
-            if (event.target === modal) {
-                closeOffice();
-            }
-        });
+        async function handlePowerPoint(message, typing) {
+            // Get AI to generate slide content
+            const aiPrompt = `Foydalanuvchi so'radi: "${message}". 
+                Slayd taqdimoti uchun mazmun yarat. Har bir slayd uchun:
+                - Sarlavha
+                - 3-4 ta asosiy nuqta
+                JSON formatda qaytaring:
+                {"slides": [{"title": "...", "points": ["...", "..."]}]}
+                FAQAT JSON, boshqa hech narsa yo'q!`;
 
-        updateModeDisplay();
+            const aiResponse = await callGroqAPI(aiPrompt);
+            typing.remove();
+
+            try {
+                const data = JSON.parse(aiResponse);
+                const slides = data.slides || [];
+
+                // Show preview
+                let preview = '<div class="doc-preview"><h4>📑 Taqdimot tayyor!</h4>';
+                slides.forEach((slide, i) => {
+                    preview += `<div class="slide-preview"><strong>Slayd ${i+1}: ${slide.title}</strong><br>`;
+                    slide.points.forEach(p => preview += `• ${p}<br>`);
+                    preview += '</div>';
+                });
+                preview += '<button class="download-btn" onclick="downloadPPT(\'' + 
+                    encodeURIComponent(JSON.stringify(slides)) + '\')">📥 PowerPoint Yuklab olish</button></div>';
+                
+                addMessage(preview, 'bot');
+            } catch (e) {
+                // Fallback
+                createSimplePPT(message);
+                addMessage('✅ Taqdimot yaratildi!<br><button class="download-btn" onclick="downloadSimplePPT()">📥 Yuklab olish</button>', 'bot');
+            }
+        }
+
+        async function handleResume(message, typing) {
+            const aiPrompt = `Foydalanuvchi so'radi: "${message}". 
+                Professional rezyume yarat. JSON formatda:
+                {"name": "Ism", "age": "13", "position": "Kasb", "skills": ["skill1", "skill2"], "experience": ["exp1"]}`;
+
+            const aiResponse = await callGroqAPI(aiPrompt);
+            typing.remove();
+
+            createResumePDF();
+            addMessage('✅ Rezyume yaratildi!<br><button class="download-btn" onclick="downloadResume()">📥 PDF Yuklab olish</button>', 'bot');
+        }
+
+        async function handleExcel(message, typing) {
+            typing.remove();
+            createExcelTable(message);
+            addMessage('✅ Excel jadval yaratildi!<br><button class="download-btn" onclick="downloadExcel()">📥 Excel Yuklab olish</button>', 'bot');
+        }
+
+        async function handleCertificate(message, typing) {
+            typing.remove();
+            createCertificate();
+            addMessage('✅ Sertifikat yaratildi!<br><button class="download-btn" onclick="downloadCert()">📥 PDF Yuklab olish</button>', 'bot');
+        }
+
+        async function handleChat(message, typing) {
+            const aiResponse = await callGroqAPI(message);
+            typing.remove();
+            addMessage(aiResponse, 'bot');
+        }
+
+        async function callGroqAPI(prompt) {
+            const response = await fetch(GROQ_API, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + API_KEY
+                },
+                body: JSON.stringify({
+                    model: 'llama-3.3-70b-versatile',
+                    messages: [{
+                        role: 'user',
+                        content: prompt + ' O\'ZBEK TILIDA javob ber!'
+                    }],
+                    temperature: 0.7,
+                    max_tokens: 1000
+                })
+            });
+
+            if (!response.ok) throw new Error('API xatosi');
+            
+            const data = await response.json();
+            return data.choices[0].message.content;
+        }
+
+        // PowerPoint
+        window.downloadPPT = function(slidesData) {
+            const slides = JSON.parse(decodeURIComponent(slidesData));
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('landscape');
+
+            slides.forEach((slide, i) => {
+                if (i > 0) doc.addPage();
+                
+                doc.setFillColor(102, 126, 234);
+                doc.rect(0, 0, 297, 210, 'F');
+                
+                doc.setTextColor(255, 255, 255);
+                doc.setFontSize(28);
+                doc.text(slide.title, 148, 60, { align: 'center' });
+                
+                doc.setFontSize(14);
+                let y = 90;
+                slide.points.forEach(point => {
+                    doc.text('• ' + point, 30, y);
+                    y += 15;
+                });
+            });
+
+            doc.save('Taqdimot.pdf');
+        };
+
+        function createSimplePPT(message) {
+            window.simplePPTData = message;
+        }
+
+        window.downloadSimplePPT = function() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('landscape');
+            
+            for (let i = 0; i < 5; i++) {
+                if (i > 0) doc.addPage();
+                doc.setFillColor(102, 126, 234);
+                doc.rect(0, 0, 297, 210, 'F');
+                doc.setTextColor(255, 255, 255);
+                doc.setFontSize(32);
+                doc.text('Slayd ' + (i+1), 148, 100, { align: 'center' });
+            }
+            doc.save('Taqdimot.pdf');
+        };
+
+        // Resume
+        function createResumePDF() {
+            window.resumeData = true;
+        }
+
+        window.downloadResume = function() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            doc.setFontSize(24);
+            doc.text('REZYUME', 105, 20, { align: 'center' });
+            doc.setFontSize(12);
+            doc.text('Ism: Xo\'jayev Muhammad Yusuf', 20, 40);
+            doc.text('Yosh: 13', 20, 50);
+            doc.text('Maktab: 45-maktab, O\'zbekiston tumani', 20, 60);
+            doc.text('Kasb: Dasturchi', 20, 70);
+            
+            doc.setFontSize(14);
+            doc.text('Ko\'nikmalar:', 20, 90);
+            doc.text('• JavaScript, HTML, CSS, Python', 25, 100);
+            doc.text('• AI/ML, ChatXMY yaratuvchisi', 25, 110);
+            doc.text('• Git, GitHub', 25, 120);
+            
+            doc.save('Rezyume.pdf');
+        };
+
+        // Excel
+        function createExcelTable(message) {
+            window.excelData = message;
+        }
+
+        window.downloadExcel = function() {
+            const data = [
+                ['Oy', 'Daromad', 'Xarajat', 'Tejash'],
+                ['Yanvar', 1000000, 700000, 300000],
+                ['Fevral', 1200000, 800000, 400000],
+                ['Mart', 1100000, 750000, 350000]
+            ];
+            
+            const wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.aoa_to_sheet(data);
+            XLSX.utils.book_append_sheet(wb, ws, 'Jadval');
+            XLSX.writeFile(wb, 'Jadval.xlsx');
+        };
+
+        // Certificate
+        function createCertificate() {
+            window.certData = true;
+        }
+
+        window.downloadCert = function() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('landscape');
+            
+            doc.setFillColor(102, 126, 234);
+            doc.rect(10, 10, 277, 190, 'D');
+            
+            doc.setFontSize(36);
+            doc.text('SERTIFIKAT', 148, 60, { align: 'center' });
+            
+            doc.setFontSize(18);
+            doc.text('Xo\'jayev Muhammad Yusuf', 148, 100, { align: 'center' });
+            doc.text('ChatXMY AI platformasini yaratgani uchun', 148, 120, { align: 'center' });
+            doc.text(new Date().toLocaleDateString(), 148, 160, { align: 'center' });
+            
+            doc.save('Sertifikat.pdf');
+        };
     </script>
 </body>
 </html>
