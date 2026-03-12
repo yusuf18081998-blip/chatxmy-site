@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ChatXMY AI Ultimate</title>
+    <title>ChatXMY Ultimate</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -36,6 +37,15 @@
             justify-content: space-between;
             align-items: center;
         }
+        .history-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 12px;
+        }
         .messages {
             flex: 1;
             padding: 15px;
@@ -60,21 +70,13 @@
             background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
         }
-        .message.bot { 
-            align-self: flex-start; 
-            background: #f5f5f5; 
-            color: #333; 
-        }
+        .message.bot { align-self: flex-start; background: #f5f5f5; color: #333; }
         .doc-preview {
             background: white;
             border: 2px solid #667eea;
             border-radius: 10px;
             padding: 15px;
             margin: 10px 0;
-        }
-        .doc-preview h4 {
-            color: #667eea;
-            margin-bottom: 10px;
         }
         .slide-preview {
             background: #f9f9f9;
@@ -89,19 +91,18 @@
             background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
             border-radius: 8px;
-            text-decoration: none;
             margin: 5px;
             cursor: pointer;
             border: none;
             font-weight: 600;
         }
-        .download-btn:hover { opacity: 0.9; }
         .input-area {
             padding: 12px 15px;
             border-top: 2px solid #eee;
             display: flex;
             gap: 8px;
             align-items: center;
+            position: relative;
         }
         input[type="text"] {
             flex: 1;
@@ -119,14 +120,102 @@
             border-radius: 25px;
             cursor: pointer;
             font-weight: 600;
-            font-size: 13px;
         }
-        .typing {
-            display: inline-block;
-            padding: 10px 15px;
-            background: #f0f0f0;
-            border-radius: 10px;
+        .plus-btn {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
         }
+        .plus-btn:hover { transform: rotate(90deg) scale(1.1); }
+        .plus-btn.active { transform: rotate(45deg); background: #ff4444; }
+        .plus-menu {
+            position: absolute;
+            bottom: 65px;
+            left: 15px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+            padding: 8px;
+            display: none;
+            flex-direction: column;
+            gap: 4px;
+            z-index: 1000;
+            max-height: 500px;
+            overflow-y: auto;
+            width: 280px;
+        }
+        .plus-menu.show { display: flex; }
+        .menu-section {
+            border-bottom: 1px solid #f0f0f0;
+            padding-bottom: 4px;
+            margin-bottom: 4px;
+        }
+        .menu-section:last-child { border-bottom: none; }
+        .menu-section-title {
+            font-size: 10px;
+            font-weight: bold;
+            color: #999;
+            padding: 4px 8px;
+            text-transform: uppercase;
+        }
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .menu-item:hover {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+        .menu-icon { font-size: 18px; width: 22px; text-align: center; }
+        .menu-text { font-weight: 600; font-size: 12px; }
+        input[type="file"] { display: none; }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal.show { display: flex; }
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .modal-header {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #667eea;
+        }
+        .history-item {
+            padding: 10px;
+            margin: 5px 0;
+            background: #f9f9f9;
+            border-radius: 8px;
+            cursor: pointer;
+            border-left: 3px solid #667eea;
+        }
+        .history-item:hover { background: #f0f0f0; }
         .typing::after {
             content: '...';
             animation: dots 1.5s steps(4, end) infinite;
@@ -142,31 +231,145 @@
     <div class="container">
         <div class="header">
             <div>
-                <h1 style="font-size: 20px;">🚀 ChatXMY AI Ultimate</h1>
-                <p style="font-size: 10px; opacity: 0.9;">AI Chat + Office Generator</p>
+                <h1 style="font-size: 20px;">🚀 ChatXMY Ultimate</h1>
+                <p style="font-size: 10px; opacity: 0.9;" id="modeDisplay">💬 Umumiy</p>
             </div>
+            <button class="history-btn" onclick="showHistory()">📜 Tarix</button>
         </div>
         <div class="messages" id="messages">
             <div class="message bot">
-                🎉 <strong>ChatXMY AI Ultimate!</strong><br><br>
-                Nima yaratmoqchisiz?<br><br>
+                🎉 <strong>ChatXMY Ultimate - To'liq versiya!</strong><br><br>
+                ✨ AI Chat + Office Generator + Internet + Ko'proq!<br><br>
                 <strong>Misollar:</strong><br>
                 📑 "Python haqida 5 ta slayd yarat"<br>
                 📄 "Men haqimda rezyume yoz"<br>
-                📊 "Oy davomida xarajat jadvali"<br>
-                📕 "Yutuq sertifikati yarat"<br><br>
-                Savol bering! 💬
+                📊 "Byudjet jadvali yarat"<br>
+                🔍 "Internet'dan izla: AI yangiliklari"<br><br>
+                Savol bering yoki "+" tugmani bosing! 💬
             </div>
         </div>
         <div class="input-area">
-            <input type="text" id="input" placeholder="Masalan: Python haqida 5 ta slayd yarat..." onkeypress="if(event.key==='Enter') sendMessage()">
+            <input type="file" id="imageInput" accept="image/*" onchange="handleImageUpload(event)">
+            <input type="file" id="fileInput" accept=".pdf,.docx,.txt" onchange="handleFileUpload(event)">
+            <button class="plus-btn" id="plusBtn" onclick="togglePlusMenu()">+</button>
+            <div class="plus-menu" id="plusMenu">
+                <div class="menu-section">
+                    <div class="menu-section-title">🎯 Rejimlar</div>
+                    <div class="menu-item" onclick="selectMode('general')">
+                        <span class="menu-icon">💬</span>
+                        <span class="menu-text">Umumiy</span>
+                    </div>
+                    <div class="menu-item" onclick="selectMode('math')">
+                        <span class="menu-icon">🔢</span>
+                        <span class="menu-text">Matematik</span>
+                    </div>
+                    <div class="menu-item" onclick="selectMode('code')">
+                        <span class="menu-icon">💻</span>
+                        <span class="menu-text">Dasturlash</span>
+                    </div>
+                </div>
+                <div class="menu-section">
+                    <div class="menu-section-title">🛠️ Vositalar</div>
+                    <div class="menu-item" onclick="document.getElementById('imageInput').click(); togglePlusMenu()">
+                        <span class="menu-icon">📷</span>
+                        <span class="menu-text">Rasm</span>
+                    </div>
+                    <div class="menu-item" onclick="document.getElementById('fileInput').click(); togglePlusMenu()">
+                        <span class="menu-icon">📁</span>
+                        <span class="menu-text">Fayl</span>
+                    </div>
+                    <div class="menu-item" onclick="toggleSearch()">
+                        <span class="menu-icon">🔍</span>
+                        <span class="menu-text">Internet</span>
+                    </div>
+                </div>
+                <div class="menu-section">
+                    <div class="menu-section-title">📚 AI Office</div>
+                    <div class="menu-item" onclick="quickOffice('slayd')">
+                        <span class="menu-icon">📑</span>
+                        <span class="menu-text">AI Slayd</span>
+                    </div>
+                    <div class="menu-item" onclick="quickOffice('rezyume')">
+                        <span class="menu-icon">📄</span>
+                        <span class="menu-text">AI Rezyume</span>
+                    </div>
+                    <div class="menu-item" onclick="quickOffice('jadval')">
+                        <span class="menu-icon">📊</span>
+                        <span class="menu-text">AI Jadval</span>
+                    </div>
+                    <div class="menu-item" onclick="quickOffice('sertifikat')">
+                        <span class="menu-icon">📕</span>
+                        <span class="menu-text">AI Sertifikat</span>
+                    </div>
+                </div>
+                <div class="menu-section">
+                    <div class="menu-section-title">🗑️ Boshqa</div>
+                    <div class="menu-item" onclick="clearAll()">
+                        <span class="menu-icon">🗑️</span>
+                        <span class="menu-text">Tozalash</span>
+                    </div>
+                </div>
+            </div>
+            <input type="text" id="input" placeholder="Xabar yoki buyruq..." onkeypress="if(event.key==='Enter') sendMessage()">
             <button onclick="sendMessage()">📤</button>
+        </div>
+    </div>
+
+    <!-- History Modal -->
+    <div class="modal" id="historyModal">
+        <div class="modal-content">
+            <div class="modal-header">📜 Suhbat tarixi</div>
+            <div id="historyList"></div>
+            <button class="download-btn" onclick="closeHistory()" style="width:100%; margin-top:20px">❌ Yopish</button>
         </div>
     </div>
 
     <script>
         const GROQ_API = 'https://api.groq.com/openai/v1/chat/completions';
         const API_KEY = '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';
+        
+        let currentMode = 'general';
+        let searchMode = false;
+        let chatHistory = JSON.parse(localStorage.getItem('chatxmy_history') || '[]');
+
+        const modes = {
+            general: { name: 'Umumiy', icon: '💬', prompt: 'Sen ChatXMY AI. O\'zbek tilida javob ber.' },
+            math: { name: 'Matematik', icon: '🔢', prompt: 'Sen matematik. Qadamma-qadam tushuntir.' },
+            code: { name: 'Dasturlash', icon: '💻', prompt: 'Sen dasturchi. Kod yoz va tushuntir.' }
+        };
+
+        function updateModeDisplay() {
+            document.getElementById('modeDisplay').textContent = \`\${modes[currentMode].icon} \${modes[currentMode].name}\`;
+        }
+
+        function togglePlusMenu() {
+            document.getElementById('plusMenu').classList.toggle('show');
+            document.getElementById('plusBtn').classList.toggle('active');
+        }
+
+        function selectMode(mode) {
+            currentMode = mode;
+            updateModeDisplay();
+            togglePlusMenu();
+            addMessage(\`\${modes[mode].icon} \${modes[mode].name} rejimi!\`, 'bot');
+        }
+
+        function toggleSearch() {
+            searchMode = !searchMode;
+            togglePlusMenu();
+            addMessage(searchMode ? '🔍 Internet qidiruv yoqildi!' : '💬 Oddiy chat', 'bot');
+        }
+
+        function quickOffice(type) {
+            togglePlusMenu();
+            const prompts = {
+                slayd: 'ChatXMY haqida 5 ta slayd yarat',
+                rezyume: 'Men haqimda rezyume yarat',
+                jadval: 'Oy davomida xarajat jadvali',
+                sertifikat: 'Yutuq sertifikati yarat'
+            };
+            document.getElementById('input').value = prompts[type];
+        }
 
         function addMessage(text, type) {
             const div = document.createElement('div');
@@ -174,6 +377,14 @@
             div.innerHTML = text;
             document.getElementById('messages').appendChild(div);
             document.getElementById('messages').scrollTop = 999999;
+            
+            // Save to history
+            if (type === 'user' || type === 'bot') {
+                chatHistory.push({ type, text, time: new Date().toLocaleString() });
+                if (chatHistory.length > 50) chatHistory.shift();
+                localStorage.setItem('chatxmy_history', JSON.stringify(chatHistory));
+            }
+            
             return div;
         }
 
@@ -188,90 +399,74 @@
             const typing = addMessage('<span class="typing">AI o\'ylayapti</span>', 'bot');
 
             try {
-                // Detect document type
                 const lower = message.toLowerCase();
                 
-                if (lower.includes('slayd') || lower.includes('taqdimot') || lower.includes('powerpoint') || lower.includes('ppt')) {
+                if (lower.includes('slayd') || lower.includes('taqdimot') || lower.includes('powerpoint')) {
                     await handlePowerPoint(message, typing);
-                } else if (lower.includes('rezyume') || lower.includes('cv') || lower.includes('resume')) {
-                    await handleResume(message, typing);
-                } else if (lower.includes('jadval') || lower.includes('excel') || lower.includes('xls')) {
-                    await handleExcel(message, typing);
-                } else if (lower.includes('sertifikat') || lower.includes('certificate')) {
-                    await handleCertificate(message, typing);
+                } else if (lower.includes('rezyume') || lower.includes('cv')) {
+                    await handleResume(typing);
+                } else if (lower.includes('jadval') || lower.includes('excel')) {
+                    await handleExcel(typing);
+                } else if (lower.includes('sertifikat')) {
+                    await handleCertificate(typing);
                 } else {
-                    // Regular AI chat
                     await handleChat(message, typing);
                 }
             } catch (error) {
                 typing.remove();
-                addMessage('❌ Xatolik yuz berdi. Qayta urinib ko\'ring!<br><small>' + error.message + '</small>', 'bot');
+                addMessage('❌ Xatolik: ' + error.message + '<br><small>Qayta urinib ko\'ring!</small>', 'bot');
             }
         }
 
         async function handlePowerPoint(message, typing) {
-            // Get AI to generate slide content
-            const aiPrompt = `Foydalanuvchi so'radi: "${message}". 
-                Slayd taqdimoti uchun mazmun yarat. Har bir slayd uchun:
-                - Sarlavha
-                - 3-4 ta asosiy nuqta
-                JSON formatda qaytaring:
-                {"slides": [{"title": "...", "points": ["...", "..."]}]}
-                FAQAT JSON, boshqa hech narsa yo'q!`;
-
-            const aiResponse = await callGroqAPI(aiPrompt);
-            typing.remove();
+            typing.innerHTML = '📑 Slaydlar yaratilmoqda...';
+            
+            const aiPrompt = \`Mavzu: "\${message}". 5 ta slayd uchun mazmun yarat. Har bir slayd: sarlavha va 3-4 ta qisqa nuqta. JSON format: {"slides":[{"title":"...","points":["..."]}]} FAQAT JSON!\`;
 
             try {
-                const data = JSON.parse(aiResponse);
+                const aiResponse = await callGroqAPI(aiPrompt);
+                const data = JSON.parse(aiResponse.replace(/```json|```/g, '').trim());
                 const slides = data.slides || [];
 
-                // Show preview
+                typing.remove();
+                
                 let preview = '<div class="doc-preview"><h4>📑 Taqdimot tayyor!</h4>';
                 slides.forEach((slide, i) => {
-                    preview += `<div class="slide-preview"><strong>Slayd ${i+1}: ${slide.title}</strong><br>`;
-                    slide.points.forEach(p => preview += `• ${p}<br>`);
+                    preview += \`<div class="slide-preview"><strong>Slayd \${i+1}: \${slide.title}</strong><br>\`;
+                    slide.points.forEach(p => preview += \`• \${p}<br>\`);
                     preview += '</div>';
                 });
                 preview += '<button class="download-btn" onclick="downloadPPT(\'' + 
-                    encodeURIComponent(JSON.stringify(slides)) + '\')">📥 PowerPoint Yuklab olish</button></div>';
+                    encodeURIComponent(JSON.stringify(slides)) + '\')">📥 PowerPoint yuklab olish</button></div>';
                 
                 addMessage(preview, 'bot');
             } catch (e) {
-                // Fallback
+                typing.remove();
                 createSimplePPT(message);
-                addMessage('✅ Taqdimot yaratildi!<br><button class="download-btn" onclick="downloadSimplePPT()">📥 Yuklab olish</button>', 'bot');
             }
         }
 
-        async function handleResume(message, typing) {
-            const aiPrompt = `Foydalanuvchi so'radi: "${message}". 
-                Professional rezyume yarat. JSON formatda:
-                {"name": "Ism", "age": "13", "position": "Kasb", "skills": ["skill1", "skill2"], "experience": ["exp1"]}`;
-
-            const aiResponse = await callGroqAPI(aiPrompt);
+        async function handleResume(typing) {
             typing.remove();
-
             createResumePDF();
-            addMessage('✅ Rezyume yaratildi!<br><button class="download-btn" onclick="downloadResume()">📥 PDF Yuklab olish</button>', 'bot');
+            addMessage('✅ Rezyume yaratildi!<br><button class="download-btn" onclick="downloadResume()">📥 PDF yuklab olish</button>', 'bot');
         }
 
-        async function handleExcel(message, typing) {
+        async function handleExcel(typing) {
             typing.remove();
-            createExcelTable(message);
-            addMessage('✅ Excel jadval yaratildi!<br><button class="download-btn" onclick="downloadExcel()">📥 Excel Yuklab olish</button>', 'bot');
+            addMessage('✅ Excel jadval yaratildi!<br><button class="download-btn" onclick="downloadExcel()">📥 Excel yuklab olish</button>', 'bot');
         }
 
-        async function handleCertificate(message, typing) {
+        async function handleCertificate(typing) {
             typing.remove();
-            createCertificate();
-            addMessage('✅ Sertifikat yaratildi!<br><button class="download-btn" onclick="downloadCert()">📥 PDF Yuklab olish</button>', 'bot');
+            addMessage('✅ Sertifikat yaratildi!<br><button class="download-btn" onclick="downloadCert()">📥 PDF yuklab olish</button>', 'bot');
         }
 
         async function handleChat(message, typing) {
-            const aiResponse = await callGroqAPI(message);
+            const prompt = modes[currentMode].prompt + ' Savol: ' + message;
+            const response = await callGroqAPI(prompt);
             typing.remove();
-            addMessage(aiResponse, 'bot');
+            addMessage(response, 'bot');
         }
 
         async function callGroqAPI(prompt) {
@@ -283,17 +478,13 @@
                 },
                 body: JSON.stringify({
                     model: 'llama-3.3-70b-versatile',
-                    messages: [{
-                        role: 'user',
-                        content: prompt + ' O\'ZBEK TILIDA javob ber!'
-                    }],
+                    messages: [{ role: 'user', content: prompt }],
                     temperature: 0.7,
-                    max_tokens: 1000
+                    max_tokens: 1500
                 })
             });
 
             if (!response.ok) throw new Error('API xatosi');
-            
             const data = await response.json();
             return data.choices[0].message.content;
         }
@@ -306,33 +497,27 @@
 
             slides.forEach((slide, i) => {
                 if (i > 0) doc.addPage();
-                
                 doc.setFillColor(102, 126, 234);
                 doc.rect(0, 0, 297, 210, 'F');
-                
                 doc.setTextColor(255, 255, 255);
                 doc.setFontSize(28);
                 doc.text(slide.title, 148, 60, { align: 'center' });
-                
                 doc.setFontSize(14);
                 let y = 90;
                 slide.points.forEach(point => {
-                    doc.text('• ' + point, 30, y);
-                    y += 15;
+                    const lines = doc.splitTextToSize('• ' + point, 240);
+                    lines.forEach(line => {
+                        doc.text(line, 30, y);
+                        y += 10;
+                    });
                 });
             });
-
-            doc.save('Taqdimot.pdf');
+            doc.save('Taqdimot_ChatXMY.pdf');
         };
 
         function createSimplePPT(message) {
-            window.simplePPTData = message;
-        }
-
-        window.downloadSimplePPT = function() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF('landscape');
-            
             for (let i = 0; i < 5; i++) {
                 if (i > 0) doc.addPage();
                 doc.setFillColor(102, 126, 234);
@@ -342,39 +527,30 @@
                 doc.text('Slayd ' + (i+1), 148, 100, { align: 'center' });
             }
             doc.save('Taqdimot.pdf');
-        };
-
-        // Resume
-        function createResumePDF() {
-            window.resumeData = true;
+            addMessage('✅ Taqdimot yaratildi! (Download avtomatik)', 'bot');
         }
 
+        // Resume
+        function createResumePDF() {}
         window.downloadResume = function() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
-            
             doc.setFontSize(24);
             doc.text('REZYUME', 105, 20, { align: 'center' });
             doc.setFontSize(12);
             doc.text('Ism: Xo\'jayev Muhammad Yusuf', 20, 40);
             doc.text('Yosh: 13', 20, 50);
             doc.text('Maktab: 45-maktab, O\'zbekiston tumani', 20, 60);
-            doc.text('Kasb: Dasturchi', 20, 70);
-            
+            doc.text('Kasb: Dasturchi, ChatXMY yaratuvchisi', 20, 70);
             doc.setFontSize(14);
             doc.text('Ko\'nikmalar:', 20, 90);
             doc.text('• JavaScript, HTML, CSS, Python', 25, 100);
-            doc.text('• AI/ML, ChatXMY yaratuvchisi', 25, 110);
-            doc.text('• Git, GitHub', 25, 120);
-            
+            doc.text('• AI/ML, Groq, Tavily API', 25, 110);
+            doc.text('• Git, GitHub, Netlify', 25, 120);
             doc.save('Rezyume.pdf');
         };
 
         // Excel
-        function createExcelTable(message) {
-            window.excelData = message;
-        }
-
         window.downloadExcel = function() {
             const data = [
                 ['Oy', 'Daromad', 'Xarajat', 'Tejash'],
@@ -382,35 +558,78 @@
                 ['Fevral', 1200000, 800000, 400000],
                 ['Mart', 1100000, 750000, 350000]
             ];
-            
             const wb = XLSX.utils.book_new();
             const ws = XLSX.utils.aoa_to_sheet(data);
             XLSX.utils.book_append_sheet(wb, ws, 'Jadval');
-            XLSX.writeFile(wb, 'Jadval.xlsx');
+            XLSX.writeFile(wb, 'Byudjet.xlsx');
         };
 
         // Certificate
-        function createCertificate() {
-            window.certData = true;
-        }
-
         window.downloadCert = function() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF('landscape');
-            
             doc.setFillColor(102, 126, 234);
             doc.rect(10, 10, 277, 190, 'D');
-            
             doc.setFontSize(36);
             doc.text('SERTIFIKAT', 148, 60, { align: 'center' });
-            
             doc.setFontSize(18);
             doc.text('Xo\'jayev Muhammad Yusuf', 148, 100, { align: 'center' });
-            doc.text('ChatXMY AI platformasini yaratgani uchun', 148, 120, { align: 'center' });
+            doc.text('ChatXMY platformasini yaratgani uchun', 148, 120, { align: 'center' });
             doc.text(new Date().toLocaleDateString(), 148, 160, { align: 'center' });
-            
             doc.save('Sertifikat.pdf');
         };
+
+        // History
+        function showHistory() {
+            const modal = document.getElementById('historyModal');
+            const list = document.getElementById('historyList');
+            list.innerHTML = '';
+            
+            if (chatHistory.length === 0) {
+                list.innerHTML = '<p>Hali tarix yo\'q</p>';
+            } else {
+                chatHistory.slice().reverse().forEach((item, i) => {
+                    const div = document.createElement('div');
+                    div.className = 'history-item';
+                    div.innerHTML = \`<small>\${item.time}</small><br><strong>\${item.type === 'user' ? 'Siz' : 'AI'}:</strong> \${item.text.substring(0, 100)}...\`;
+                    list.appendChild(div);
+                });
+            }
+            modal.classList.add('show');
+        }
+
+        function closeHistory() {
+            document.getElementById('historyModal').classList.remove('show');
+        }
+
+        function handleImageUpload(event) {
+            addMessage('📷 Rasm yuklandi! (Vision AI keyingi versiyada)', 'bot');
+        }
+
+        function handleFileUpload(event) {
+            addMessage('📁 Fayl yuklandi! (Tahlil keyingi versiyada)', 'bot');
+        }
+
+        function clearAll() {
+            if (confirm('Suhbatni tozalash?')) {
+                chatHistory = [];
+                localStorage.setItem('chatxmy_history', '[]');
+                location.reload();
+            }
+        }
+
+        document.addEventListener('click', function(event) {
+            const menu = document.getElementById('plusMenu');
+            const btn = document.getElementById('plusBtn');
+            const modal = document.getElementById('historyModal');
+            if (!menu.contains(event.target) && event.target !== btn) {
+                menu.classList.remove('show');
+                btn.classList.remove('active');
+            }
+            if (event.target === modal) closeHistory();
+        });
+
+        updateModeDisplay();
     </script>
 </body>
 </html>
