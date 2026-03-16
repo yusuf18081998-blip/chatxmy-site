@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ChatXMY</title>
+    <title>ChatXMY - Complete</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.11.0/math.min.js"></script>
@@ -33,10 +33,19 @@
             color: white;
             padding: 15px 20px;
             border-radius: 20px 20px 0 0;
-            text-align: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
-        .header h1 { font-size: 24px; margin-bottom: 5px; }
+        .header h1 { font-size: 24px; }
         .header p { font-size: 12px; opacity: 0.9; }
+        .badge {
+            background: rgba(255,255,255,0.2);
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 11px;
+            font-weight: bold;
+        }
         
         .messages {
             flex: 1;
@@ -51,6 +60,11 @@
             padding: 12px 16px;
             border-radius: 14px;
             word-wrap: break-word;
+            animation: slideIn 0.3s ease;
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         .message.user {
             align-self: flex-end;
@@ -61,6 +75,59 @@
             align-self: flex-start; 
             background: #f5f5f5; 
             color: #333; 
+        }
+        
+        .image-result { max-width: 100%; border-radius: 10px; margin: 10px 0; }
+        
+        /* Game Styles */
+        .game-container {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 10px 0;
+            color: white;
+        }
+        .game-title {
+            font-size: 20px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        .ttt-board {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            max-width: 300px;
+            margin: 20px auto;
+        }
+        .ttt-cell {
+            aspect-ratio: 1;
+            background: rgba(255,255,255,0.9);
+            border: 3px solid white;
+            border-radius: 10px;
+            font-size: 48px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+        }
+        .ttt-cell:active { transform: scale(0.95); }
+        .ttt-cell.taken { cursor: not-allowed; opacity: 0.7; }
+        
+        .download-btn, .game-btn, .vote-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 8px;
+            margin: 5px;
+            cursor: pointer;
+            border: none;
+            font-weight: 600;
+            font-size: 12px;
+            text-decoration: none;
         }
         
         .input-area {
@@ -127,7 +194,6 @@
             border-radius: 8px;
             cursor: pointer;
             transition: all 0.2s;
-            background: white;
         }
         .menu-item:active {
             background: linear-gradient(135deg, #667eea, #764ba2);
@@ -157,37 +223,27 @@
             cursor: pointer;
             flex-shrink: 0;
         }
-        
-        .image-result { max-width: 100%; border-radius: 10px; margin: 10px 0; }
-        .download-btn {
-            display: inline-block;
-            padding: 10px 20px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            border-radius: 8px;
-            margin: 5px;
-            cursor: pointer;
-            border: none;
-            font-weight: 600;
-            font-size: 12px;
-            text-decoration: none;
-        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>🚀 ChatXMY</h1>
-            <p>Sun'iy Intellektlar Qiroli 👑</p>
+            <div>
+                <h1>🚀 ChatXMY</h1>
+                <p>Sun'iy Intellektlar Qiroli 👑</p>
+            </div>
+            <div class="badge" id="score">⭐ 0</div>
         </div>
         
         <div class="messages" id="messages">
             <div class="message bot">
-                🔥 <strong>ChatXMY - ULTIMATE!</strong><br><br>
+                🔥 <strong>ChatXMY - COMPLETE!</strong><br><br>
+                🥊 <strong>AI Battle:</strong> ChatGPT, Claude, Gemini<br>
                 🎨 <strong>Rasm yaratish</strong><br>
                 🔤 <strong>Tarjimon</strong> (100+ til)<br>
                 🧮 <strong>Matematik</strong> yechim<br>
-                📚 <strong>Office</strong> (Word, Excel, PPT)<br>
+                🎮 <strong>O'yinlar:</strong> XO, Viktorina, Raqam<br>
+                📚 <strong>Office:</strong> Word, Excel, PPT<br>
                 💬 <strong>AI Chat</strong><br><br>
                 <strong>"+"</strong> tugmani bosing! 💬
             </div>
@@ -195,6 +251,22 @@
         
         <div class="input-area">
             <div class="plus-menu" id="menu">
+                <div class="menu-section">
+                    <div class="menu-section-title">🥊 AI Battle</div>
+                    <div class="menu-item" onclick="selectPrompt('ChatGPT bilan kurash')">
+                        <span class="menu-icon">🤖</span>
+                        <span class="menu-text">VS ChatGPT</span>
+                    </div>
+                    <div class="menu-item" onclick="selectPrompt('Claude bilan kurash')">
+                        <span class="menu-icon">🧠</span>
+                        <span class="menu-text">VS Claude</span>
+                    </div>
+                    <div class="menu-item" onclick="selectPrompt('Gemini bilan kurash')">
+                        <span class="menu-icon">💎</span>
+                        <span class="menu-text">VS Gemini</span>
+                    </div>
+                </div>
+                
                 <div class="menu-section">
                     <div class="menu-section-title">🎨 AI Kreativ</div>
                     <div class="menu-item" onclick="selectPrompt('Tog\'lar va daryo rasmi yarat')">
@@ -208,6 +280,22 @@
                     <div class="menu-item" onclick="selectPrompt('2x + 5 = 15 ni yech')">
                         <span class="menu-icon">🧮</span>
                         <span class="menu-text">Matematik</span>
+                    </div>
+                </div>
+                
+                <div class="menu-section">
+                    <div class="menu-section-title">🎮 O'yinlar</div>
+                    <div class="menu-item" onclick="startGame('xo')">
+                        <span class="menu-icon">❌⭕</span>
+                        <span class="menu-text">XO o'yini</span>
+                    </div>
+                    <div class="menu-item" onclick="startGame('viktorina')">
+                        <span class="menu-icon">🧠</span>
+                        <span class="menu-text">Viktorina</span>
+                    </div>
+                    <div class="menu-item" onclick="startGame('raqam')">
+                        <span class="menu-icon">🔢</span>
+                        <span class="menu-text">Raqam o'yini</span>
                     </div>
                 </div>
                 
@@ -238,13 +326,21 @@
         const API = 'https://api.groq.com/openai/v1/chat/completions';
         const KEY = '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';
         
+        var score = parseInt(localStorage.getItem('chatxmy_score') || '0');
+        updateScore();
+        
+        var tttBoard = ['','','','','','','','',''];
+        var currentPlayer = 'X';
+        var secretNumber = 0;
+        var attempts = 0;
+        
+        function updateScore() {
+            document.getElementById('score').textContent = '⭐ ' + score;
+        }
+        
         function toggleMenu() {
             var menu = document.getElementById('menu');
-            if (menu.classList.contains('active')) {
-                menu.classList.remove('active');
-            } else {
-                menu.classList.add('active');
-            }
+            menu.classList.toggle('active');
         }
         
         function selectPrompt(text) {
@@ -261,6 +357,122 @@
             return div;
         }
         
+        // GAME: XO
+        function startGame(type) {
+            document.getElementById('menu').classList.remove('active');
+            
+            if (type === 'xo') {
+                tttBoard = ['','','','','','','','',''];
+                currentPlayer = 'X';
+                var html = '<div class="game-container"><div class="game-title">❌⭕ XO O\'yini</div>';
+                html += '<div class="ttt-board" id="tttBoard">';
+                for (var i = 0; i < 9; i++) {
+                    html += '<div class="ttt-cell" onclick="makeMove(' + i + ')"></div>';
+                }
+                html += '</div><button class="game-btn" onclick="startGame(\'xo\')">🔄 Yangi</button></div>';
+                addMsg(html, 'bot');
+            } else if (type === 'viktorina') {
+                var quizzes = [
+                    {q: "ChatXMY ni kim yaratgan?", opts: ["Bill Gates", "Xo'jayev Muhammad Yusuf", "Elon Musk"], correct: 1},
+                    {q: "AI nima?", opts: ["Sun'iy intellekt", "Telefon", "Internet"], correct: 0}
+                ];
+                var quiz = quizzes[Math.floor(Math.random() * quizzes.length)];
+                window.currentQuiz = quiz;
+                var html = '<div class="game-container"><div class="game-title">🧠 Viktorina</div>';
+                html += '<p style="font-size:18px;margin:15px 0">' + quiz.q + '</p>';
+                for (var i = 0; i < quiz.opts.length; i++) {
+                    html += '<button class="game-btn" onclick="checkAnswer(' + i + ')" style="display:block;width:100%;margin:10px 0">' + quiz.opts[i] + '</button>';
+                }
+                html += '</div>';
+                addMsg(html, 'bot');
+            } else if (type === 'raqam') {
+                secretNumber = Math.floor(Math.random() * 100) + 1;
+                attempts = 0;
+                var html = '<div class="game-container"><div class="game-title">🔢 Raqam O\'yini</div>';
+                html += '<p>Men 1 dan 100 gacha raqam o\'yladim!</p>';
+                html += '<input type="number" id="guessInput" placeholder="Raqam kiriting" style="width:200px;padding:10px;margin:10px;border-radius:8px;border:2px solid white">';
+                html += '<br><button class="game-btn" onclick="guessNumber()">✅ Tekshir</button>';
+                html += '<p id="hint" style="margin-top:15px"></p></div>';
+                addMsg(html, 'bot');
+            }
+        }
+        
+        window.makeMove = function(index) {
+            if (tttBoard[index] !== '' || currentPlayer !== 'X') return;
+            tttBoard[index] = 'X';
+            updateBoard();
+            if (checkWinner('X')) {
+                setTimeout(function() { alert('🎉 Siz yutdingiz!'); score++; localStorage.setItem('chatxmy_score', score); updateScore(); }, 100);
+                return;
+            }
+            if (tttBoard.every(function(c) { return c !== ''; })) {
+                setTimeout(function() { alert('🤝 Durrang!'); }, 100);
+                return;
+            }
+            currentPlayer = 'O';
+            setTimeout(aiMove, 500);
+        };
+        
+        function aiMove() {
+            var empty = [];
+            for (var i = 0; i < 9; i++) {
+                if (tttBoard[i] === '') empty.push(i);
+            }
+            var move = empty[Math.floor(Math.random() * empty.length)];
+            tttBoard[move] = 'O';
+            updateBoard();
+            if (checkWinner('O')) {
+                setTimeout(function() { alert('🤖 AI yutdi!'); }, 100);
+                return;
+            }
+            currentPlayer = 'X';
+        }
+        
+        function updateBoard() {
+            var cells = document.querySelectorAll('#tttBoard .ttt-cell');
+            for (var i = 0; i < cells.length; i++) {
+                cells[i].textContent = tttBoard[i];
+                if (tttBoard[i] !== '') cells[i].classList.add('taken');
+            }
+        }
+        
+        function checkWinner(p) {
+            var lines = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+            for (var i = 0; i < lines.length; i++) {
+                var line = lines[i];
+                if (tttBoard[line[0]] === p && tttBoard[line[1]] === p && tttBoard[line[2]] === p) return true;
+            }
+            return false;
+        }
+        
+        window.checkAnswer = function(index) {
+            if (index === window.currentQuiz.correct) {
+                addMsg('✅ To\'g\'ri! Ajoyib!', 'bot');
+                score++;
+                localStorage.setItem('chatxmy_score', score);
+                updateScore();
+            } else {
+                addMsg('❌ Noto\'g\'ri. To\'g\'ri: ' + window.currentQuiz.opts[window.currentQuiz.correct], 'bot');
+            }
+        };
+        
+        window.guessNumber = function() {
+            var guess = parseInt(document.getElementById('guessInput').value);
+            var hint = document.getElementById('hint');
+            attempts++;
+            if (guess === secretNumber) {
+                hint.innerHTML = '🎉 To\'g\'ri! ' + attempts + ' ta urinishda!';
+                score++;
+                localStorage.setItem('chatxmy_score', score);
+                updateScore();
+            } else if (guess < secretNumber) {
+                hint.innerHTML = '📈 Kattaroq!';
+            } else {
+                hint.innerHTML = '📉 Kichikroq!';
+            }
+        };
+        
+        // MAIN SEND FUNCTION
         async function send() {
             var input = document.getElementById('userInput');
             var msg = input.value.trim();
@@ -274,8 +486,24 @@
             try {
                 var lower = msg.toLowerCase();
                 
+                // AI Battle
+                if ((lower.includes('chatgpt') || lower.includes('claude') || lower.includes('gemini')) && lower.includes('kurash')) {
+                    var opponent = lower.includes('chatgpt') ? 'ChatGPT' : (lower.includes('claude') ? 'Claude' : 'Gemini');
+                    typing.remove();
+                    var html = '<div class="game-container"><div class="game-title">🥊 AI BATTLE!</div>';
+                    html += '<p>🚀 ChatXMY VS 🤖 ' + opponent + '</p>';
+                    html += '<p style="margin:15px 0">Savol: Python nima?</p>';
+                    html += '<div style="background:rgba(255,255,255,0.2);padding:10px;border-radius:8px;margin:10px 0">';
+                    html += '<strong>ChatXMY:</strong> Python - dasturlash tili</div>';
+                    html += '<div style="background:rgba(255,255,255,0.2);padding:10px;border-radius:8px;margin:10px 0">';
+                    html += '<strong>' + opponent + ':</strong> Python is a language</div>';
+                    html += '<button class="vote-btn" onclick="voteBattle(\'chatxmy\')">👍 ChatXMY</button>';
+                    html += '<button class="vote-btn" onclick="voteBattle(\'opponent\')">👍 ' + opponent + '</button>';
+                    html += '</div>';
+                    addMsg(html, 'bot');
+                }
                 // Rasm
-                if (lower.includes('rasm') && (lower.includes('yarat') || lower.includes('chiz'))) {
+                else if (lower.includes('rasm') && (lower.includes('yarat') || lower.includes('chiz'))) {
                     var prompt = encodeURIComponent(msg.replace(/rasm|yarat|chiz/gi, '').trim());
                     var imgUrl = 'https://image.pollinations.ai/prompt/' + prompt + '?width=512&height=512&nologo=true';
                     typing.remove();
@@ -286,7 +514,6 @@
                     var text = msg.replace(/(tarjima|qil|translate|to|ga|ni)/gi, '').trim();
                     var lang = 'ru';
                     if (msg.includes('ingliz') || msg.includes('english')) lang = 'en';
-                    
                     var url = 'https://api.mymemory.translated.net/get?q=' + encodeURIComponent(text) + '&langpair=auto|' + lang;
                     var res = await fetch(url);
                     var data = await res.json();
@@ -333,10 +560,7 @@
                     typing.remove();
                     addMsg('✅ Rezyume yaratildi!', 'bot');
                 } else if (lower.includes('jadval') || lower.includes('excel')) {
-                    var data = [
-                        ['Oy', 'Daromad', 'Xarajat'],
-                        ['Yanvar', 1000000, 700000]
-                    ];
+                    var data = [['Oy', 'Daromad', 'Xarajat'], ['Yanvar', 1000000, 700000]];
                     var wb = XLSX.utils.book_new();
                     var ws = XLSX.utils.aoa_to_sheet(data);
                     XLSX.utils.book_append_sheet(wb, ws, 'Jadval');
@@ -362,7 +586,6 @@
                             max_tokens: 1000
                         })
                     });
-                    
                     var result = await response.json();
                     typing.remove();
                     addMsg(result.choices[0].message.content, 'bot');
@@ -372,6 +595,17 @@
                 addMsg('❌ Xatolik: ' + e.message, 'bot');
             }
         }
+        
+        window.voteBattle = function(winner) {
+            if (winner === 'chatxmy') {
+                score++;
+                localStorage.setItem('chatxmy_score', score);
+                updateScore();
+                addMsg('🎉 ChatXMY g\'alaba qozondi!', 'bot');
+            } else {
+                addMsg('Raqib yutdi. Keyingi safar!', 'bot');
+            }
+        };
     </script>
 </body>
 </html>
