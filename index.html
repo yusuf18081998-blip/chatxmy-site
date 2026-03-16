@@ -84,11 +84,9 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.3s;
             font-weight: bold;
             flex-shrink: 0;
         }
-        .plus-btn:active { transform: scale(0.95); }
         
         .plus-menu {
             position: absolute;
@@ -98,22 +96,20 @@
             border-radius: 15px;
             box-shadow: 0 10px 40px rgba(0,0,0,0.3);
             padding: 10px;
-            display: none;
-            flex-direction: column;
-            gap: 5px;
-            z-index: 1000;
             width: 280px;
             max-height: 500px;
             overflow-y: auto;
+            z-index: 1000;
+            display: none;
         }
-        .plus-menu.show { display: flex !important; }
+        .plus-menu.active { display: block !important; }
         
         .menu-section {
             border-bottom: 1px solid #f0f0f0;
             padding-bottom: 5px;
             margin-bottom: 5px;
         }
-        .menu-section:last-child { border-bottom: none; margin-bottom: 0; }
+        .menu-section:last-child { border-bottom: none; }
         
         .menu-section-title {
             font-size: 11px;
@@ -138,7 +134,7 @@
             color: white;
         }
         
-        .menu-icon { font-size: 18px; width: 20px; }
+        .menu-icon { font-size: 18px; }
         .menu-text { font-weight: 600; font-size: 13px; }
         
         input[type="text"] {
@@ -161,7 +157,6 @@
             cursor: pointer;
             flex-shrink: 0;
         }
-        .send-btn:active { transform: scale(0.95); }
         
         .image-result { max-width: 100%; border-radius: 10px; margin: 10px 0; }
         .download-btn {
@@ -175,6 +170,7 @@
             border: none;
             font-weight: 600;
             font-size: 12px;
+            text-decoration: none;
         }
     </style>
 </head>
@@ -198,18 +194,18 @@
         </div>
         
         <div class="input-area">
-            <div class="plus-menu" id="plusMenu">
+            <div class="plus-menu" id="menu">
                 <div class="menu-section">
                     <div class="menu-section-title">🎨 AI Kreativ</div>
-                    <div class="menu-item" data-text="Tog'lar va daryo rasmi yarat">
+                    <div class="menu-item" onclick="selectPrompt('Tog\'lar va daryo rasmi yarat')">
                         <span class="menu-icon">🎨</span>
                         <span class="menu-text">Rasm yaratish</span>
                     </div>
-                    <div class="menu-item" data-text="Hello world ni rus tiliga tarjima qil">
+                    <div class="menu-item" onclick="selectPrompt('Hello world ni rus tiliga tarjima qil')">
                         <span class="menu-icon">🔤</span>
                         <span class="menu-text">Tarjimon</span>
                     </div>
-                    <div class="menu-item" data-text="2x + 5 = 15 ni yech">
+                    <div class="menu-item" onclick="selectPrompt('2x + 5 = 15 ni yech')">
                         <span class="menu-icon">🧮</span>
                         <span class="menu-text">Matematik</span>
                     </div>
@@ -217,127 +213,105 @@
                 
                 <div class="menu-section">
                     <div class="menu-section-title">📚 Office</div>
-                    <div class="menu-item" data-text="ChatXMY haqida slayd yarat">
+                    <div class="menu-item" onclick="selectPrompt('ChatXMY haqida slayd yarat')">
                         <span class="menu-icon">📑</span>
                         <span class="menu-text">PowerPoint</span>
                     </div>
-                    <div class="menu-item" data-text="Professional rezyume yarat">
+                    <div class="menu-item" onclick="selectPrompt('Professional rezyume yarat')">
                         <span class="menu-icon">📄</span>
                         <span class="menu-text">Rezyume</span>
                     </div>
-                    <div class="menu-item" data-text="Byudjet jadvali yarat">
+                    <div class="menu-item" onclick="selectPrompt('Byudjet jadvali yarat')">
                         <span class="menu-icon">📊</span>
                         <span class="menu-text">Excel</span>
                     </div>
                 </div>
             </div>
             
-            <button class="plus-btn" id="plusBtn">+</button>
-            <input type="text" id="input" placeholder="Xabar yozing...">
-            <button class="send-btn" id="sendBtn">📤</button>
+            <button class="plus-btn" onclick="toggleMenu()">+</button>
+            <input type="text" id="userInput" placeholder="Xabar yozing..." onkeypress="if(event.key==='Enter') send()">
+            <button class="send-btn" onclick="send()">📤</button>
         </div>
     </div>
 
     <script>
-        const GROQ_API = 'https://api.groq.com/openai/v1/chat/completions';
-        const API_KEY = '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';
+        const API = 'https://api.groq.com/openai/v1/chat/completions';
+        const KEY = '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';
         
-        // Plus menu toggle
-        document.getElementById('plusBtn').addEventListener('click', function(e) {
-            e.stopPropagation();
-            const menu = document.getElementById('plusMenu');
-            menu.classList.toggle('show');
-        });
-        
-        // Menu item click
-        document.querySelectorAll('.menu-item').forEach(item => {
-            item.addEventListener('click', function() {
-                const text = this.getAttribute('data-text');
-                document.getElementById('input').value = text;
-                document.getElementById('plusMenu').classList.remove('show');
-            });
-        });
-        
-        // Close menu on outside click
-        document.addEventListener('click', function(e) {
-            const menu = document.getElementById('plusMenu');
-            const btn = document.getElementById('plusBtn');
-            if (!menu.contains(e.target) && !btn.contains(e.target)) {
-                menu.classList.remove('show');
+        function toggleMenu() {
+            var menu = document.getElementById('menu');
+            if (menu.classList.contains('active')) {
+                menu.classList.remove('active');
+            } else {
+                menu.classList.add('active');
             }
-        });
+        }
         
-        // Send button
-        document.getElementById('sendBtn').addEventListener('click', sendMessage);
+        function selectPrompt(text) {
+            document.getElementById('userInput').value = text;
+            document.getElementById('menu').classList.remove('active');
+        }
         
-        // Enter key
-        document.getElementById('input').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                sendMessage();
-            }
-        });
-        
-        function addMessage(text, type) {
-            const div = document.createElement('div');
+        function addMsg(text, type) {
+            var div = document.createElement('div');
             div.className = 'message ' + type;
             div.innerHTML = text;
             document.getElementById('messages').appendChild(div);
             document.getElementById('messages').scrollTop = 999999;
+            return div;
         }
         
-        async function sendMessage() {
-            const input = document.getElementById('input');
-            const message = input.value.trim();
-            if (!message) return;
+        async function send() {
+            var input = document.getElementById('userInput');
+            var msg = input.value.trim();
+            if (!msg) return;
             
-            addMessage(message, 'user');
+            addMsg(msg, 'user');
             input.value = '';
             
-            const typing = addMessage('⏳ AI ishlamoqda...', 'bot');
+            var typing = addMsg('⏳ AI ishlamoqda...', 'bot');
             
             try {
-                const lower = message.toLowerCase();
+                var lower = msg.toLowerCase();
                 
-                // Image
+                // Rasm
                 if (lower.includes('rasm') && (lower.includes('yarat') || lower.includes('chiz'))) {
-                    const prompt = encodeURIComponent(message.replace(/rasm|yarat|chiz/gi, '').trim());
-                    const imageUrl = \`https://image.pollinations.ai/prompt/\${prompt}?width=512&height=512&nologo=true\`;
+                    var prompt = encodeURIComponent(msg.replace(/rasm|yarat|chiz/gi, '').trim());
+                    var imgUrl = 'https://image.pollinations.ai/prompt/' + prompt + '?width=512&height=512&nologo=true';
                     typing.remove();
-                    addMessage(\`🎨 <strong>Rasm tayyor!</strong><br><img src="\${imageUrl}" class="image-result"><br><button class="download-btn" onclick="window.open('\${imageUrl}', '_blank')">📥 Yuklab olish</button>\`, 'bot');
+                    addMsg('🎨 <strong>Rasm tayyor!</strong><br><img src="' + imgUrl + '" class="image-result"><br><a href="' + imgUrl + '" target="_blank" class="download-btn">📥 Yuklab olish</a>', 'bot');
                 }
-                // Translate
+                // Tarjima
                 else if (lower.includes('tarjima') || lower.includes('translate')) {
-                    const text = message.replace(/(tarjima|qil|translate|to|ga|ni)/gi, '').trim();
-                    let targetLang = 'ru';
-                    if (message.includes('ingliz') || message.includes('english')) targetLang = 'en';
-                    else if (message.includes('turk')) targetLang = 'tr';
+                    var text = msg.replace(/(tarjima|qil|translate|to|ga|ni)/gi, '').trim();
+                    var lang = 'ru';
+                    if (msg.includes('ingliz') || msg.includes('english')) lang = 'en';
                     
-                    const apiUrl = \`https://api.mymemory.translated.net/get?q=\${encodeURIComponent(text)}&langpair=auto|\${targetLang}\`;
-                    const response = await fetch(apiUrl);
-                    const data = await response.json();
+                    var url = 'https://api.mymemory.translated.net/get?q=' + encodeURIComponent(text) + '&langpair=auto|' + lang;
+                    var res = await fetch(url);
+                    var data = await res.json();
                     typing.remove();
-                    addMessage(\`🔤 <strong>Tarjima:</strong><br>📝 Asl: \${text}<br>✅ Tarjima: \${data.responseData.translatedText}\`, 'bot');
+                    addMsg('🔤 <strong>Tarjima:</strong><br>📝 Asl: ' + text + '<br>✅ Tarjima: ' + data.responseData.translatedText, 'bot');
                 }
-                // Math
-                else if (lower.includes('yech') || lower.includes('hisob') || /\d+[x\+\-\*\/]/.test(message)) {
-                    let expr = message.replace(/yech|hisob|=|ni/gi, '').replace(/x/g, '*').trim();
-                    let result;
-                    if (message.includes('=')) {
-                        const parts = message.split('=');
+                // Matematik
+                else if (lower.includes('yech') || lower.includes('hisob') || /\d+[x\+\-\*\/]/.test(msg)) {
+                    var expr = msg.replace(/yech|hisob|=|ni/gi, '').replace(/x/g, '*').trim();
+                    var result;
+                    if (msg.includes('=')) {
+                        var parts = msg.split('=');
                         if (parts.length === 2) {
-                            result = \`x = \${(parseFloat(parts[1]) - 5) / 2}\`;
+                            result = 'x = ' + ((parseFloat(parts[1]) - 5) / 2);
                         }
                     } else {
                         result = math.evaluate(expr);
                     }
                     typing.remove();
-                    addMessage(\`🧮 <strong>Natija:</strong><br>📝 Misol: \${message}<br>✅ Javob: \${result}\`, 'bot');
+                    addMsg('🧮 <strong>Natija:</strong><br>📝 Misol: ' + msg + '<br>✅ Javob: ' + result, 'bot');
                 }
                 // Office
-                else if (lower.includes('slayd') || lower.includes('taqdimot')) {
-                    const { jsPDF } = window.jspdf;
-                    const doc = new jsPDF('landscape');
-                    for (let i = 0; i < 5; i++) {
+                else if (lower.includes('slayd')) {
+                    var doc = new jsPDF.jsPDF('landscape');
+                    for (var i = 0; i < 5; i++) {
                         if (i > 0) doc.addPage();
                         doc.setFillColor(102, 126, 234);
                         doc.rect(0, 0, 297, 210, 'F');
@@ -347,59 +321,55 @@
                     }
                     doc.save('Taqdimot.pdf');
                     typing.remove();
-                    addMessage('✅ PowerPoint yaratildi!', 'bot');
+                    addMsg('✅ PowerPoint yaratildi!', 'bot');
                 } else if (lower.includes('rezyume')) {
-                    const { jsPDF } = window.jspdf;
-                    const doc = new jsPDF();
+                    var doc = new jsPDF.jsPDF();
                     doc.setFontSize(24);
                     doc.text('REZYUME', 105, 20, { align: 'center' });
                     doc.setFontSize(12);
                     doc.text('Ism: Xo\'jayev Muhammad Yusuf', 20, 40);
                     doc.text('Yosh: 13', 20, 50);
-                    doc.text('Kasb: AI Dasturchi', 20, 60);
                     doc.save('Rezyume.pdf');
                     typing.remove();
-                    addMessage('✅ Rezyume yaratildi!', 'bot');
+                    addMsg('✅ Rezyume yaratildi!', 'bot');
                 } else if (lower.includes('jadval') || lower.includes('excel')) {
-                    const data = [
+                    var data = [
                         ['Oy', 'Daromad', 'Xarajat'],
-                        ['Yanvar', 1000000, 700000],
-                        ['Fevral', 1200000, 800000]
+                        ['Yanvar', 1000000, 700000]
                     ];
-                    const wb = XLSX.utils.book_new();
-                    const ws = XLSX.utils.aoa_to_sheet(data);
+                    var wb = XLSX.utils.book_new();
+                    var ws = XLSX.utils.aoa_to_sheet(data);
                     XLSX.utils.book_append_sheet(wb, ws, 'Jadval');
                     XLSX.writeFile(wb, 'Byudjet.xlsx');
                     typing.remove();
-                    addMessage('✅ Excel yaratildi!', 'bot');
+                    addMsg('✅ Excel yaratildi!', 'bot');
                 }
                 // AI Chat
                 else {
-                    const response = await fetch(GROQ_API, {
+                    var response = await fetch(API, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
-                            'Authorization': 'Bearer ' + API_KEY
+                            'Authorization': 'Bearer ' + KEY
                         },
                         body: JSON.stringify({
                             model: 'llama-3.3-70b-versatile',
                             messages: [{
                                 role: 'user',
-                                content: 'Sen ChatXMY AI. Yaratuvchi: Xo\'jayev Muhammad Yusuf. ' + message + ' O\'zbek tilida javob ber!'
+                                content: 'Sen ChatXMY AI. Yaratuvchi: Xo\'jayev Muhammad Yusuf, 13 yosh. ' + msg + ' O\'zbek tilida javob ber!'
                             }],
                             temperature: 0.7,
                             max_tokens: 1000
                         })
                     });
                     
-                    if (!response.ok) throw new Error('API xatosi');
-                    const data = await response.json();
+                    var result = await response.json();
                     typing.remove();
-                    addMessage(data.choices[0].message.content, 'bot');
+                    addMsg(result.choices[0].message.content, 'bot');
                 }
-            } catch (error) {
+            } catch (e) {
                 typing.remove();
-                addMessage('❌ Xatolik: ' + error.message, 'bot');
+                addMsg('❌ Xatolik: ' + e.message, 'bot');
             }
         }
     </script>
