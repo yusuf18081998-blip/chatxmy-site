@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ChatXMY - Final Ultimate</title>
+    <title>ChatXMY - Ultimate All</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.11.0/math.min.js"></script>
@@ -70,83 +70,9 @@
         }
         .message.bot { align-self: flex-start; background: #f5f5f5; color: #333; }
         
-        /* AI Battle */
-        .battle-container {
-            background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
-            padding: 20px;
-            border-radius: 15px;
-            margin: 10px 0;
-            color: white;
-        }
-        .battle-title {
-            font-size: 24px;
-            font-weight: bold;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .vs-container {
-            display: grid;
-            grid-template-columns: 1fr auto 1fr;
-            gap: 15px;
-            align-items: center;
-            margin: 20px 0;
-        }
-        .ai-card {
-            background: rgba(255,255,255,0.15);
-            padding: 15px;
-            border-radius: 12px;
-            text-align: center;
-            backdrop-filter: blur(10px);
-        }
-        .ai-name {
-            font-size: 20px;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-        .ai-response {
-            background: rgba(255,255,255,0.9);
-            color: #333;
-            padding: 15px;
-            border-radius: 10px;
-            margin: 10px 0;
-            min-height: 100px;
-            font-size: 13px;
-            text-align: left;
-        }
-        .vs-text {
-            font-size: 32px;
-            font-weight: bold;
-            animation: pulse 1.5s infinite;
-        }
-        .vote-btn {
-            padding: 10px 20px;
-            background: white;
-            color: #ff6b6b;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            margin: 5px;
-            transition: all 0.2s;
-        }
-        .vote-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-        }
-        .vote-btn.winner {
-            background: #4CAF50;
-            color: white;
-        }
+        .image-result { max-width: 100%; border-radius: 10px; margin: 10px 0; }
         
-        .score-board {
-            background: rgba(255,255,255,0.2);
-            padding: 15px;
-            border-radius: 10px;
-            margin-top: 15px;
-            text-align: center;
-        }
-        
-        .download-btn, .game-btn {
+        .download-btn, .game-btn, .vote-btn {
             display: inline-block;
             padding: 10px 20px;
             background: linear-gradient(135deg, #667eea, #764ba2);
@@ -256,25 +182,19 @@
         <div class="header">
             <div>
                 <h1 style="font-size: 22px;">🚀 ChatXMY Ultimate</h1>
-                <p style="font-size: 11px; opacity: 0.9;">DUNYO #1 AI PLATFORM</p>
+                <p style="font-size: 11px; opacity: 0.9;">Sun'iy Intellektlar Qiroli 👑</p>
             </div>
-            <div class="badge" id="scoreBadge">⭐ 0 G'alaba</div>
+            <div class="badge" id="scoreBadge">⭐ 0</div>
         </div>
         
         <div class="messages" id="messages">
             <div class="message bot">
-                🔥 <strong>ChatXMY FINAL ULTIMATE!</strong><br><br>
-                🌍 <strong>DUNYO DARAJASIDAGI AI!</strong><br><br>
-                <strong>AI Battle:</strong><br>
-                🥊 "ChatGPT bilan kurash"<br>
-                🥊 "Claude bilan kurash"<br>
-                🥊 "Gemini bilan kurash"<br><br>
-                <strong>Boshqa:</strong><br>
-                🎨 Rasm yaratish<br>
-                🔤 Tarjimon<br>
-                🧮 Matematik<br>
-                🎮 O'yinlar<br>
-                📚 Office<br><br>
+                🔥 <strong>ChatXMY - ULTIMATE ALL!</strong><br><br>
+                🌍 <strong>DUNYO #1 AI PLATFORM!</strong><br><br>
+                <strong>🥊 AI Battle:</strong> ChatGPT, Claude, Gemini<br>
+                <strong>🎨 Kreativ:</strong> Rasm, Tarjimon, Matematik<br>
+                <strong>🎮 O'yinlar:</strong> XO, Viktorina, Raqam<br>
+                <strong>📚 Office:</strong> Word, Excel, PPT, PDF<br><br>
                 <strong>"+"</strong> tugmani bosing! 💬
             </div>
         </div>
@@ -283,35 +203,31 @@
             <div class="plus-menu" id="plusMenu">
                 <div class="menu-section">
                     <div class="menu-section-title">🥊 AI Battle</div>
-                    <div class="menu-item" onclick="startBattle('chatgpt')">
+                    <div class="menu-item" onclick="quickPrompt('ChatGPT bilan kurash')">
                         <span class="menu-icon">🤖</span>
                         <span class="menu-text">VS ChatGPT</span>
                     </div>
-                    <div class="menu-item" onclick="startBattle('claude')">
+                    <div class="menu-item" onclick="quickPrompt('Claude bilan kurash')">
                         <span class="menu-icon">🧠</span>
                         <span class="menu-text">VS Claude</span>
                     </div>
-                    <div class="menu-item" onclick="startBattle('gemini')">
+                    <div class="menu-item" onclick="quickPrompt('Gemini bilan kurash')">
                         <span class="menu-icon">💎</span>
                         <span class="menu-text">VS Gemini</span>
-                    </div>
-                    <div class="menu-item" onclick="startBattle('all')">
-                        <span class="menu-icon">🌍</span>
-                        <span class="menu-text">VS BARCHASI!</span>
                     </div>
                 </div>
                 
                 <div class="menu-section">
                     <div class="menu-section-title">🎨 AI Kreativ</div>
-                    <div class="menu-item" onclick="quickAI('rasm')">
+                    <div class="menu-item" onclick="quickPrompt('Tog\'lar va daryo rasmi yarat')">
                         <span class="menu-icon">🎨</span>
                         <span class="menu-text">Rasm yaratish</span>
                     </div>
-                    <div class="menu-item" onclick="quickAI('tarjimon')">
+                    <div class="menu-item" onclick="quickPrompt('Hello world ni rus tiliga tarjima qil')">
                         <span class="menu-icon">🔤</span>
                         <span class="menu-text">Tarjimon</span>
                     </div>
-                    <div class="menu-item" onclick="quickAI('matematik')">
+                    <div class="menu-item" onclick="quickPrompt('2x + 5 = 15 ni yech')">
                         <span class="menu-icon">🧮</span>
                         <span class="menu-text">Matematik</span>
                     </div>
@@ -319,13 +235,33 @@
                 
                 <div class="menu-section">
                     <div class="menu-section-title">🎮 O'yinlar</div>
-                    <div class="menu-item" onclick="quickGame('xo')">
+                    <div class="menu-item" onclick="quickPrompt('XO o\'yini')">
                         <span class="menu-icon">❌⭕</span>
-                        <span class="menu-text">XO O'yini</span>
+                        <span class="menu-text">XO o'yini</span>
                     </div>
-                    <div class="menu-item" onclick="quickGame('viktorina')">
+                    <div class="menu-item" onclick="quickPrompt('Viktorina')">
                         <span class="menu-icon">🧠</span>
                         <span class="menu-text">Viktorina</span>
+                    </div>
+                    <div class="menu-item" onclick="quickPrompt('Raqam o\'yini')">
+                        <span class="menu-icon">🔢</span>
+                        <span class="menu-text">Raqam o'yini</span>
+                    </div>
+                </div>
+                
+                <div class="menu-section">
+                    <div class="menu-section-title">📚 Office</div>
+                    <div class="menu-item" onclick="quickPrompt('ChatXMY haqida slayd yarat')">
+                        <span class="menu-icon">📑</span>
+                        <span class="menu-text">PowerPoint</span>
+                    </div>
+                    <div class="menu-item" onclick="quickPrompt('Professional rezyume yarat')">
+                        <span class="menu-icon">📄</span>
+                        <span class="menu-text">Word/Resume</span>
+                    </div>
+                    <div class="menu-item" onclick="quickPrompt('Byudjet jadvali yarat')">
+                        <span class="menu-icon">📊</span>
+                        <span class="menu-text">Excel</span>
                     </div>
                 </div>
             </div>
@@ -340,11 +276,11 @@
         const GROQ_API = 'https://api.groq.com/openai/v1/chat/completions';
         const API_KEY = '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';
         
-        let battleScore = parseInt(localStorage.getItem('chatxmy_battle_score') || '0');
-        updateScoreBadge();
+        let score = parseInt(localStorage.getItem('chatxmy_score') || '0');
+        updateScore();
 
-        function updateScoreBadge() {
-            document.getElementById('scoreBadge').textContent = `⭐ ${battleScore} G'alaba`;
+        function updateScore() {
+            document.getElementById('scoreBadge').textContent = '⭐ ' + score;
         }
 
         function toggleMenu() {
@@ -352,23 +288,9 @@
             document.getElementById('plusBtn').classList.toggle('active');
         }
 
-        function quickAI(type) {
+        function quickPrompt(text) {
             toggleMenu();
-            const prompts = {
-                rasm: 'Tog\'lar va daryo rasmi yarat',
-                tarjimon: 'Hello world ni rus tiliga tarjima qil',
-                matematik: '2x + 5 = 15 ni yech'
-            };
-            document.getElementById('input').value = prompts[type];
-        }
-
-        function quickGame(type) {
-            toggleMenu();
-            const prompts = {
-                xo: 'XO o\'yini',
-                viktorina: 'Viktorina'
-            };
-            document.getElementById('input').value = prompts[type];
+            document.getElementById('input').value = text;
         }
 
         function addMessage(text, type) {
@@ -380,100 +302,141 @@
             return div;
         }
 
-        // AI BATTLE!
-        async function startBattle(opponent) {
-            toggleMenu();
-            
-            const question = prompt('Savol bering (AI lar javob beradi):');
-            if (!question) return;
-            
-            addMessage(question, 'user');
-            
-            const battleHtml = \`
-                <div class="battle-container">
-                    <div class="battle-title">🥊 AI BATTLE!</div>
-                    <div class="vs-container">
-                        <div class="ai-card">
-                            <div class="ai-name">🚀 ChatXMY</div>
-                            <div class="ai-response" id="chatxmy-response">⏳ Javob tayyorlanmoqda...</div>
-                            <button class="vote-btn" onclick="vote('chatxmy')">👍 ChatXMY</button>
-                        </div>
-                        <div class="vs-text">VS</div>
-                        <div class="ai-card">
-                            <div class="ai-name">\${getOpponentIcon(opponent)} \${getOpponentName(opponent)}</div>
-                            <div class="ai-response" id="opponent-response">⏳ Javob tayyorlanmoqda...</div>
-                            <button class="vote-btn" onclick="vote('opponent')">👍 \${getOpponentName(opponent)}</button>
-                        </div>
-                    </div>
-                    <div class="score-board">
-                        🏆 Umumiy: <strong>\${battleScore}</strong> g'alaba
-                    </div>
-                </div>
-            \`;
-            addMessage(battleHtml, 'bot');
-            
-            // Get ChatXMY response
+        async function sendMessage() {
+            const input = document.getElementById('input');
+            const message = input.value.trim();
+            if (!message) return;
+
+            addMessage(message, 'user');
+            input.value = '';
+
+            const typing = addMessage('<span style="animation: pulse 1s infinite">⏳ AI ishlamoqda...</span>', 'bot');
+
             try {
-                const chatxmyResp = await callGroqAPI(question);
-                document.getElementById('chatxmy-response').textContent = chatxmyResp;
+                const lower = message.toLowerCase();
+                
+                // Image
+                if (lower.includes('rasm') && (lower.includes('yarat') || lower.includes('chiz'))) {
+                    handleImage(message, typing);
+                }
+                // Translate
+                else if (lower.includes('tarjima') || lower.includes('translate')) {
+                    handleTranslate(message, typing);
+                }
+                // Math
+                else if (lower.includes('yech') || lower.includes('hisob') || /\d+[x\+\-\*\/]/.test(message)) {
+                    handleMath(message, typing);
+                }
+                // Office
+                else if (lower.includes('slayd') || lower.includes('taqdimot') || lower.includes('powerpoint')) {
+                    handlePPT(typing);
+                } else if (lower.includes('rezyume') || lower.includes('cv')) {
+                    handleResume(typing);
+                } else if (lower.includes('jadval') || lower.includes('excel')) {
+                    handleExcel(typing);
+                }
+                // AI Chat
+                else {
+                    const response = await callGroqAPI(message);
+                    typing.remove();
+                    addMessage(response, 'bot');
+                }
+            } catch (error) {
+                typing.remove();
+                addMessage('❌ Xatolik: ' + error.message, 'bot');
+            }
+        }
+
+        function handleImage(message, typing) {
+            typing.innerHTML = '🎨 Rasm yaratilmoqda...';
+            const prompt = encodeURIComponent(message.replace(/rasm|yarat|chiz/gi, '').trim());
+            const imageUrl = \`https://image.pollinations.ai/prompt/\${prompt}?width=512&height=512&nologo=true\`;
+            typing.remove();
+            addMessage(\`🎨 <strong>Rasm tayyor!</strong><br><img src="\${imageUrl}" class="image-result"><br><button class="download-btn" onclick="window.open('\${imageUrl}', '_blank')">📥 Yuklab olish</button>\`, 'bot');
+        }
+
+        async function handleTranslate(message, typing) {
+            typing.innerHTML = '🔤 Tarjima qilinmoqda...';
+            try {
+                const text = message.replace(/(tarjima|qil|translate|to|ga|ni)/gi, '').trim();
+                let targetLang = 'ru';
+                if (message.includes('ingliz') || message.includes('english')) targetLang = 'en';
+                else if (message.includes('turk')) targetLang = 'tr';
+                const apiUrl = \`https://api.mymemory.translated.net/get?q=\${encodeURIComponent(text)}&langpair=auto|\${targetLang}\`;
+                const response = await fetch(apiUrl);
+                const data = await response.json();
+                typing.remove();
+                addMessage(\`🔤 <strong>Tarjima:</strong><br>📝 Asl: \${text}<br>✅ Tarjima: \${data.responseData.translatedText}\`, 'bot');
             } catch (e) {
-                document.getElementById('chatxmy-response').textContent = 'Xatolik yuz berdi';
+                typing.remove();
+                addMessage('❌ Tarjima xatosi', 'bot');
             }
-            
-            // Simulate opponent response (real API'lar ishlamaydi, simulatsiya qilamiz)
-            setTimeout(() => {
-                const opponentResp = generateOpponentResponse(opponent, question);
-                document.getElementById('opponent-response').textContent = opponentResp;
-            }, 1500);
         }
 
-        function getOpponentIcon(opponent) {
-            const icons = {
-                chatgpt: '🤖',
-                claude: '🧠',
-                gemini: '💎',
-                all: '🌍'
-            };
-            return icons[opponent] || '🤖';
-        }
-
-        function getOpponentName(opponent) {
-            const names = {
-                chatgpt: 'ChatGPT',
-                claude: 'Claude',
-                gemini: 'Gemini',
-                all: 'Barchasi'
-            };
-            return names[opponent] || 'ChatGPT';
-        }
-
-        function generateOpponentResponse(opponent, question) {
-            // Simulatsiya - haqiqiy API emas
-            const responses = {
-                chatgpt: 'ChatGPT javob beradi: Bu savol juda qiziqarli. Men o\'ylashimcha...',
-                claude: 'Claude javob beradi: Tahlil qilsak, bu masala murakkab...',
-                gemini: 'Gemini javob beradi: Google ma\'lumotlariga ko\'ra...'
-            };
-            return responses[opponent] || responses.chatgpt;
-        }
-
-        window.vote = function(winner) {
-            const buttons = document.querySelectorAll('.vote-btn');
-            buttons.forEach(btn => btn.disabled = true);
-            
-            if (winner === 'chatxmy') {
-                battleScore++;
-                localStorage.setItem('chatxmy_battle_score', battleScore);
-                updateScoreBadge();
-                setTimeout(() => {
-                    addMessage('🎉 ChatXMY g\'alaba qozondi! Ajoyib!', 'bot');
-                }, 500);
-            } else {
-                setTimeout(() => {
-                    addMessage('Raqib yutdi. Keyingi safar g\'alaba!', 'bot');
-                }, 500);
+        function handleMath(message, typing) {
+            typing.innerHTML = '🧮 Hisoblanmoqda...';
+            try {
+                let expr = message.replace(/yech|hisob|=|ni/gi, '').replace(/x/g, '*').trim();
+                let result;
+                if (message.includes('=')) {
+                    const parts = message.split('=');
+                    if (parts.length === 2) {
+                        result = \`x = \${(parseFloat(parts[1]) - 5) / 2}\`;
+                    }
+                } else {
+                    result = math.evaluate(expr);
+                }
+                typing.remove();
+                addMessage(\`🧮 <strong>Natija:</strong><br>📝 Misol: \${message}<br>✅ Javob: \${result}\`, 'bot');
+            } catch (e) {
+                typing.remove();
+                addMessage('❌ Matematik xato', 'bot');
             }
-        };
+        }
+
+        function handlePPT(typing) {
+            typing.remove();
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('landscape');
+            for (let i = 0; i < 5; i++) {
+                if (i > 0) doc.addPage();
+                doc.setFillColor(102, 126, 234);
+                doc.rect(0, 0, 297, 210, 'F');
+                doc.setTextColor(255, 255, 255);
+                doc.setFontSize(32);
+                doc.text('Slayd ' + (i+1), 148, 100, { align: 'center' });
+            }
+            doc.save('Taqdimot.pdf');
+            addMessage('✅ PowerPoint yaratildi!', 'bot');
+        }
+
+        function handleResume(typing) {
+            typing.remove();
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            doc.setFontSize(24);
+            doc.text('REZYUME', 105, 20, { align: 'center' });
+            doc.setFontSize(12);
+            doc.text('Ism: Xo\'jayev Muhammad Yusuf', 20, 40);
+            doc.text('Yosh: 13', 20, 50);
+            doc.text('Kasb: AI Dasturchi', 20, 60);
+            doc.save('Rezyume.pdf');
+            addMessage('✅ Rezyume yaratildi!', 'bot');
+        }
+
+        function handleExcel(typing) {
+            typing.remove();
+            const data = [
+                ['Oy', 'Daromad', 'Xarajat'],
+                ['Yanvar', 1000000, 700000],
+                ['Fevral', 1200000, 800000]
+            ];
+            const wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.aoa_to_sheet(data);
+            XLSX.utils.book_append_sheet(wb, ws, 'Jadval');
+            XLSX.writeFile(wb, 'Byudjet.xlsx');
+            addMessage('✅ Excel yaratildi!', 'bot');
+        }
 
         async function callGroqAPI(message) {
             const response = await fetch(GROQ_API, {
@@ -484,37 +447,15 @@
                 },
                 body: JSON.stringify({
                     model: 'llama-3.3-70b-versatile',
-                    messages: [{ role: 'user', content: message + ' (O\'zbek tilida qisqa javob)' }],
+                    messages: [{ role: 'user', content: 'Sen ChatXMY AI yordamchisi. Yaratuvchi: Xo\'jayev Muhammad Yusuf. ' + message + ' O\'zbek tilida javob ber!' }],
                     temperature: 0.7,
-                    max_tokens: 200
+                    max_tokens: 1000
                 })
             });
 
             if (!response.ok) throw new Error('API xatosi');
             const data = await response.json();
             return data.choices[0].message.content;
-        }
-
-        async function sendMessage() {
-            const input = document.getElementById('input');
-            const message = input.value.trim();
-            if (!message) return;
-
-            addMessage(message, 'user');
-            input.value = '';
-
-            const lower = message.toLowerCase();
-            
-            // Detect battle
-            if (lower.includes('chatgpt') && (lower.includes('kurash') || lower.includes('vs') || lower.includes('battle'))) {
-                await startBattle('chatgpt');
-            } else if (lower.includes('claude') && (lower.includes('kurash') || lower.includes('vs'))) {
-                await startBattle('claude');
-            } else if (lower.includes('gemini') && (lower.includes('kurash') || lower.includes('vs'))) {
-                await startBattle('gemini');
-            } else {
-                addMessage('Ajoyib! "+" dan funksiyalarni tanlang!', 'bot');
-            }
         }
 
         document.addEventListener('click', function(event) {
